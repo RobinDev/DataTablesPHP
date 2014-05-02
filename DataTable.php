@@ -332,8 +332,8 @@ class DataTable {
 					$search_value = trim($this->request['columns'][$i]['search']['value']);
 					$key = self::toSQLColumn($column, true);
 
-					if(preg_match("/^\[(<=|>=|=|<|>)\](.+)/i", $search_value, $matches)) {
-						$columnSearch[] = $key.' '.$match[1].' \'%'.self::quote($matches[2]).'%\'';
+					if(preg_match("/^\[(<=|>=|=|<|>)\](.+)/i", $search_value, $match)) {
+						$columnSearch[] = $key.' '.$match[1].' '.self::quote($match[2]);
 					}
 					elseif(preg_match('/(.*)'.$sRangeSeparator.'(.*)/i', $search_value, $matches)) {
 
