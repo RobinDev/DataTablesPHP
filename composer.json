@@ -2,7 +2,7 @@
     "name": "ropendev/datatablesphp",
     "description": "PHP DataTables wrapper class for DataTables.js (Html and/or Javascript generation, Server-Side SQL) .",
     "keywords": ["DataTables", "jQuery Table", "HTML Table", "DataTables.js"],
-    "homepage": "https://github.com/RobinDev/DataTablesPHP",
+    "homepage": "http://www.robin-d.fr/DataTablesPHP/",
     "license": "MIT",
     "require": {
         "php": ">=5.3.0"
@@ -16,11 +16,6 @@
     "autoload": {
         "psr-0": {
             "rOpenDev\\DataTablesPHP\\DataTable": ""
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.0-dev"
         }
     }
 }
