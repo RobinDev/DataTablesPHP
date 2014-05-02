@@ -11,7 +11,7 @@ DataTablesPHP : PHP class for easily use DataTables.js
 
 ##Description
 
-DataTablesPHP generates easily your DataTable Html or Javascript... or the twice. More, this class generates the SQL queries to execute and if you return the results to the class, it will output at the json format. Enhance the filters's utilisation with the jquery.dataTables.columnFilter.js (unofficial plugin).
+DataTablesPHP generates easily your DataTable Html or Javascript... or the twice. More, this class generates the SQL queries to execute and if you return the results to the class, it will output at the json format. Enhance the filters's utilisation with the [jquery.dataTables.columnFilter.js (unofficial plugin)](https://github.com/RobinDev/jquery.dataTables.columnFilter.js).
 
 **Compatible with the last version of DataTables (1.10.x).**
 
