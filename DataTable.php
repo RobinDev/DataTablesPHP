@@ -196,7 +196,7 @@ class DataTable {
 	 */
 	function setJoin($table, $on, $join = 'LEFT JOIN') {
 		$on2 = array_keys($on);
-		$this->join[] = $join.' '.$table.' ON '.key($on).'.'.current($on). ' = '.next($on2).'.'.next($on);
+		$this->join[] = $join.' `'.$table.'` ON `'.key($on).'`.`'.current($on).'` = `'.next($on2).'`.`'.next($on).'`';
 		return $this;
 	}
 

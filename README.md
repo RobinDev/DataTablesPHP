@@ -19,7 +19,7 @@ Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/Da
 
 ## Todo
 It will come in the next days :
-* **Add compatibility with JOIN in sql request** => Maintenant disponible
+* **Add compatibility with JOIN in sql request** => Now you can !
 * Add compatibility with Doctrine
 * Clean the code
 * Make documentation
@@ -141,6 +141,8 @@ DataTable::instance('TableId')->getHtml();        // Return html table in a stri
 # You can't use server side options if you didn't set Columns
 
 DataTable::instance('TableId')->setTable($table); // Name of the table to query
+
+DataTable::instance('TableId')->setJoin($table, array('table'=>'column', 'table'=>'column') [, $join = 'LEFT JOIN'); // Table to join
 
 DataTable::instance('TableId')->generateSQLRequest($request);                     // Generate 3 SQL queries to execute
 DataTable::instance('TableId')->sendData($data, $recordsFiltered, $recordsTotal); // Output the json results
