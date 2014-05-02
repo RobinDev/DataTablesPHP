@@ -19,7 +19,7 @@ Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/Da
 
 ## Todo
 It will come in the next days :
-* **Add compatibility with JOIN in sql request**
+* **Add compatibility with JOIN in sql request** => Maintenant disponible
 * Add compatibility with Doctrine
 * Clean the code
 * Make documentation

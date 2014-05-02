@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * PHP DataTablesPHP wrapper class for DataTables.js (Html, Javascript & Server Side). http://www.robin-d.fr/DataTablesPHP/
  * Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/DataTables/DataTables/blob/master/examples/server_side/scripts/ssp.class.php)
@@ -20,7 +18,6 @@ class DataTable {
 	/**
 	 * It seems there is no way to generate the tFoot like the thead
 	 * To Be compatible with the plugin jquery.dataTables.columnFilter.js we need to generate a footer.
-	 * Use the setFooter function.
 	 */
 	protected $footer = false;
 
@@ -31,7 +28,7 @@ class DataTable {
 	private static $instance = null;
 
 	public static function instance($tableName = 'datatable') {
-		 $cls = get_called_class(); //$intance_name = $tableName.$cls;
+		 $cls = get_called_class();
 		if(!isset(self::$instance[$tableName]))
 			self::$instance[$tableName] = new $cls($tableName);
 		return self::$instance[$tableName];
@@ -74,9 +71,9 @@ class DataTable {
 			$this->columns[$name] = (object) $jsParams;
 			$this->columns[$name]->mData = $name;
 		} else {/**/
-			if(isset($name))
-				$jsParams['data'] = $name;
-			$this->columns[] =(object) $jsParams;
+		if(isset($name))
+			$jsParams['data'] = $name;
+		$this->columns[] =(object) $jsParams;
 		//}
 		return $this;
 	}
@@ -100,7 +97,6 @@ class DataTable {
 	 * @param string|array $ajax
 	 */
 	function setServerSide($ajax, $onDataLoaded = null) {
-		//$this->setJsInitParameter('bProcessing', true);
 		$this->setJsInitParameter('serverSide', true);
 		$this->setJsInitParameter('ajax', $ajax);
 		if(isset($onDataLoaded)) {
@@ -185,12 +181,22 @@ class DataTable {
 
 
 	/*** Server Side ***/
-	/*
-	 * Concept de l'unset_column pour les colonnes non affichées
-	 */
 
 	function setTable($table) {
 		$this->table = $table;
+		return $this;
+	}
+
+	/**
+	 * Join data from other tables
+	 *
+	 * @param string $table  .
+	 * @param array  $on     Must contains two elements like key:sql_table => value:sql_column
+	 * @param string $join   .
+	 */
+	function setJoin($table, $on, $join = 'LEFT JOIN') {
+		$on2 = array_keys($on);
+		$this->join[] = $join.' '.$table.' ON '.key($on).'.'.current($on). ' = '.next($on2).'.'.next($on);
 		return $this;
 	}
 
@@ -209,7 +215,6 @@ class DataTable {
 			for ( $j=0, $jen=count($this->columns) ; $j<$jen ; $j++ ) {
 				$column = $this->columns[$j];
 
-				// Is there a formatter?
 				if ( isset( $column->formatter ) ) {
 					$row[ $column->data ] = $column->formatter( $data[$i][ self::fromSQLColumn($column) ], $data[$i] );
 				}
@@ -246,8 +251,10 @@ class DataTable {
 		foreach($this->unsetColumns as $c)
 			$columns[] = self::toSQLColumn($c);
 
+		$join = isset($this->join) ? ' '.implode(' ', $this->join) : '';
+
 		return array(
-			'data' 			  => 'SELECT SQL_CALC_FOUND_ROWS '.implode(',',$columns).' FROM '.$this->table.' '.$where.' '.$order.' '.$limit.';',
+			'data' 			  => 'SELECT SQL_CALC_FOUND_ROWS '.implode(',',$columns).' FROM '.$this->table.$join.' '.$where.' '.$order.' '.$limit.';',
 			'recordsFiltered' => 'SELECT FOUND_ROWS() count;',
 			'recordsTotal'	  => 'SELECT COUNT(*) count FROM '.$this->table.';'
 		);
@@ -275,19 +282,12 @@ class DataTable {
 	*/
 	function order() {
 		$order = '';
-		//$columns = $this->getColumns();
 		if (isset($this->request['order']) && count($this->request['order'])) {
 			$orderBy = array();
 			for ($i=0,$ien=count($this->request['order']);$i<$ien;$i++) {
-				//$columnIdx = $columns['order'][$i]['key']; //$requestColumn = $request['columns'][$i];
-				//$requestColumn = $this->columns[$key];
-
-				//dbv($this->request['order']);
 				$columnIdx = intval($this->request['order'][$i]['column']);
 				$requestColumn = $this->request['columns'][$columnIdx];
-				//$columnIdx = array_search( $requestColumn['data'], $dtColumns );
 				$column = $this->columns[$columnIdx];
-
 				if (!isset($column->orderable) || $column->orderable === true) {
 					$orderBy[] = self::toSQLColumn($column, true).' '.($this->request['order'][$i]['dir'] === 'asc' ? 'ASC' : 'DESC');
 				}
@@ -311,7 +311,6 @@ class DataTable {
 
 			for ( $i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++ ) {
 				$requestColumn = $this->request['columns'][$i];
-				//$columnIdx = array_search( $requestColumn['data'], $dtColumns );
 				$column = $this->columns[$i];
 
 				if (!isset($column['searchable']) || $column['searchable'] === true) {//$requestColumn['searchable'] == 'true' ) { // Don't trust user input !
@@ -325,7 +324,6 @@ class DataTable {
 			$sRangeSeparator = isset($this->columnFilterParams['sRangeSeparator']) ? $this->columnFilterParams['sRangeSeparator'] : '~'; // See jquery.dataTables.columnFilter.js doc
 			for ( $i=0, $ien=count($this->columns) ; $i<$ien ; $i++ ) {
 				$requestColumn = $this->request['columns'][$i];
-				//$columnIdx = array_search( $requestColumn['data'], $dtColumns );
 				$column = $this->columns[$i];
 
 				if ((!isset($column->searchable) || $column->searchable === true) && !empty($this->request['columns'][$i]['search']['value'])) {
