@@ -15,7 +15,7 @@ DataTablesPHP generates easily your DataTable Html or Javascript... or the twice
 
 **Compatible with the last version of DataTables (1.10.x).**
 
-Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/DataTables/DataTables/blob/master/examples/server_side/scripts/ssp.class.php). Improve in order to don't trust user input.
+Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/DataTables/DataTables/blob/master/examples/server_side/scripts/ssp.class.php). Improve in order to don't trust user input and the join possibilities.
 
 ## Todo
 It will come in the next days :

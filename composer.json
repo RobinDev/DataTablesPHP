@@ -14,8 +14,8 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "rOpenDev\\DataTablesPHP\\DataTable": ""
+        "psr-4": {
+            "rOpenDev\\DataTablesPHP": ""
         }
     }
 }
