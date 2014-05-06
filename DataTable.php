@@ -430,7 +430,6 @@ class DataTable {
 			$orderBy = array();
 			for ($i=0,$ien=count($this->request['order']);$i<$ien;$i++) {
 				$columnIdx = intval($this->request['order'][$i]['column']);
-				//$requestColumn = $this->request['columns'][$columnIdx];
 				$column = $this->columns[$columnIdx];
 				if (!isset($column['orderable']) || $column['orderable'] === true) {
 					$orderBy[] = self::toSQLColumn($column, true).' '.($this->request['order'][$i]['dir'] === 'asc' ? 'ASC' : 'DESC');
@@ -444,7 +443,7 @@ class DataTable {
 	/**
 	* Searching/Filtering : Construct the WHERE clause for server-side processing SQL query.
 	*/
-	function filter () {
+	function filter() {
 		$globalSearch = array();
 		$columnSearch = array();
 
@@ -463,9 +462,7 @@ class DataTable {
 		if(isset($this->columnFilterParams)) {
 			$sRangeSeparator = isset($this->columnFilterParams['sRangeSeparator']) ? $this->columnFilterParams['sRangeSeparator'] : '~'; // See jquery.dataTables.columnFilter.js doc
 			for ( $i=0, $ien=count($this->columns) ; $i<$ien ; $i++ ) {
-				$requestColumn = $this->request['columns'][$i];
 				$column = $this->columns[$i];
-
 				if ((!isset($column['searchable']) || $column['searchable'] === true) && !empty($this->request['columns'][$i]['search']['value'])) {
 					$search_value = trim($this->request['columns'][$i]['search']['value']);
 					$key = self::toSQLColumn($column, true);
