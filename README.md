@@ -3,30 +3,41 @@ DataTablesPHP : PHP class for easily use DataTables.js
 
 ##Table of contents
 * [Description](#description)
+	* [Features](#features)
 * [Todo](#todo)
 * [Installation](#installation)
     * [Packagist](https://packagist.org/packages/ropendev/datatablesphp)
 * [Examples](#examples)
+* [Documentation](#documentation)
 * [DataTablesPHP](http://www.robin-d.fr/DataTablesPHP/)
 
 ##Description
 
-DataTablesPHP generates easily your DataTable Html or Javascript... or the twice. More, this class generates the SQL queries to execute and if you return the results to the class, it will output at the json format. Enhance the filters's utilisation with the [jquery.dataTables.columnFilter.js (unofficial plugin)](https://github.com/RobinDev/jquery.dataTables.columnFilter.js).
+DataTablesPHP generates easily your DataTable Html or Javascript... with Server-Side or not. It enhances the filters's utilisation with the [jquery.dataTables.columnFilter.js (unofficial plugin)](https://github.com/RobinDev/jquery.dataTables.columnFilter.js).
 
 **Compatible with the last version of DataTables (1.10.x).**
 
-Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/DataTables/DataTables/blob/master/examples/server_side/scripts/ssp.class.php). Improve in order to don't trust user input and the join possibilities.
+###Features
+* Generate html table (complexe header)
+* Generate the Javascript related (Data can be set in the initial parameters or load via Ajax or Server-Sive)
+* Custom search column by column
+* Analyze Servert-Side Request and Generate SQL queries
+    * Can handle complexe query (join)
+    * Can handle Optimize Query to search value (not only Like %, you can parameter to use =,<,>,<=,>=,BETWEEN...)
+* Using all this features in the same time permits to easily handle a dataTable with PHP
 
-## Todo
-It will come in the next days :
-* **Add compatibility with JOIN in sql request** => Now you can !
+Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/DataTables/DataTables/blob/master/examples/server_side/scripts/ssp.class.php). Improve in order to don't trust user input, add the join possibilities and more...
+
+##Todo
+It will come soon :
+* Leave columnFilters plugin and replace it with PHP (soon)
 * Add compatibility with Doctrine
 * Clean the code
 * Make documentation
 
 ##Installation
 
-[Composer](http://getcomposer.org) is recommended for installation.
+You can clone this git, download the class or use Composer :
 ```json
 {
     "require": {
@@ -34,15 +45,11 @@ It will come in the next days :
     }
 }
 ```
-```
-composer update
-```
 
 ##Examples
 
 There is examples in the example directory.
 
-###Simple Usage
 ```php
 <?php
 include '../DataTable.php';
@@ -120,32 +127,42 @@ $(document).ready(function() {
 <?php echo $dataTable->getHtml(); ?>
 ```
 
-### All the options
+##Documentation
 ```php
-DataTable::instance('TableId')->setJsInitParameter($key, $value)   // http://datatables.net/reference/option/
-                              ->setJsInitParameterNC($key, $value) // For set in the value a javascript function
-                              ->setJsInitParameters($params)       // To set all params in one time
-                              ->setDom($dom)                       // Alias for setJsInitParameter('dom', $dom)
-                              ->setColumn($jsParams[, $name])      // Add a column and there options to the table
-                              ->setColumns($columns)               // Add columns
-                              ->setData($data)                     // For not server-side table wich have data in a php array
-                              ->setServerSide($ajax)               // http://datatables.net/reference/option/ajax
-                              ->setFooter($bool)                   // To generate tfoot with th empty when you will call getHtml
-                              ->setColumnFilterActive($bool);      // Active the use of https://github.com/RobinDev/jquery.dataTables.columnFilter.js
+DataTable::instance('id')
+    ->setJsInitParameter($key, $value)   // http://datatables.net/reference/option/
+    ->setJsInitParameterNC($key, $value) // For set in the value a javascript function
+    ->setJsInitParameters($params)       // To set all params in one time
+    ->setDom($dom)                       // Alias for setJsInitParameter('dom', $dom)
+    ->setColumn($jsParams[, $name])      // Add a column and there options to the table
+    ->setColumns($columns)               // Add columns
+    ->setUnsetColumns($unsetColumns)	 // To add in the SQL select columns wich are not print directly as table column
+    ->setData($data)                     // For not server-side table wich have data in a php array
+    ->setServerSide($ajax)               // http://datatables.net/reference/option/ajax
+    ->setAjax($ajax)               		 // Alias for setJsInitParameter('ajax', $ajax)
+    ->setFooter($bool)                   // To generate tfoot with th empty when you will call getHtml
+    ->setColumnFilterActive($bool);      // Active the use of https://github.com/RobinDev/jquery.dataTables.columnFilter.js
 
-DataTable::instance('TableId')->getJavascript();  // Return javascript string. It is not embeding JS Files from DataTables.js... only it activation
+DataTable::instance('id')->getJavascript();  // Return javascript string. It is not embeding JS Files from DataTables.js... only it activation
 
-DataTable::instance('TableId')->getHtml();        // Return html table in a string
+DataTable::instance('id')->getHtml([array('class'=>'my_table_class', 'data-nuclear'=>'bomb')]);        // Return html table in a string
 
 /*** Server-Side Functions ***/
 # You can't use server side options if you didn't set Columns
 
-DataTable::instance('TableId')->setTable($table); // Name of the table to query
+DataTable::instance('id')->setFrom($table); // Name of the table to query
 
-DataTable::instance('TableId')->setJoin($table, array('table'=>'column', 'table'=>'column') [, $join = 'LEFT JOIN'); // Table to join
+DataTable::instance('id')->setJoin('table2', array('table'=>'column', 'table2'=>'column2') [, $join = 'LEFT JOIN']); // Table to join
 
-DataTable::instance('TableId')->generateSQLRequest($request);                     // Generate 3 SQL queries to execute
-DataTable::instance('TableId')->sendData($data, $recordsFiltered, $recordsTotal); // Output the json results
-DataTable::instance('TableId')->sendFatal($error);                                // Output an error
-
+DataTable::instance('id')->generateSQLRequest($request);                     // Generate 3 SQL queries to execute
+DataTable::instance('id')->sendData($data, $recordsFiltered, $recordsTotal); // Output the json results
+DataTable::instance('id')->sendFatal($error);      // Output an error
 ```
+
+A php array for a column can contain :
+* Properties for Initialization Javascript (see `self::$columnParams` or http://datatables.net/reference/option/)
+* `parent` (`=>$title`) : To have a complex header with a colspan... Set the same $title to put multiple column under the same th
+* `sFilter` (`=>array`) : for the column filtering options (see `self::$columFilteringParams`)
+* SQL params (`sql_name` and `sql_table`) : if there is different from data or default table set with setFrom
+* `formatter` (`=>function([$column,]$row)`) : if you want to print your data with a special format, set a function
+In a Server-Side Request, if you don't want select a SQL column, just don't set `sql_name` or `data` properties (but set a `formatter` function to print something !).

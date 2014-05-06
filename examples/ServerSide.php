@@ -14,12 +14,12 @@ include '../DataTable.php';
 use rOpenDev\DataTablesPHP\DataTable;
 
 $columns = array(
-	'first_name'=> array('title'=>'First Name'),
-	'last_name' => array('title'=>'Last Name'),
-	'email' 	=> array('title'=>'Email', 'orderable' => false, 'searchable'=>false),
-	'office'	=> array('title'=>'Office'),
-	'age' 		=> array('title'=>'Age', 'class'=>'right'),
-	'sal' 		=> array('title'=>'Salary', 'class'=>'right', 'formatter'=>null, 'sql_name' => 'salary')
+	array('data'=>'first_name', 'title'=>'First Name'),
+	array('data'=>'last_name', 'title'=>'Last Name'),
+	array('data'=>'email', 'title'=>'Email', 'orderable' => false, 'searchable'=>false),
+	array('data'=>'office', 'title'=>'Office'),
+	array('data'=>'age', 'title'=>'Age', 'class'=>'right'),
+	array('data'=>'sal', 'title'=>'Salary', 'class'=>'right', 'formatter'=>null, 'sql_name' => 'salary')
 );
 
 $unsetColumns = array(
@@ -39,7 +39,7 @@ $dataTable->setColumns($columns)
 
 if(isset($_REQUEST['draw'])) {
 
-	$dataTable->setTable('datatables_demo');
+	$dataTable->setFrom('datatables_demo');
 
 	$queries = $dataTable->generateSQLRequest($_REQUEST);
 

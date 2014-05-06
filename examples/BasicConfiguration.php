@@ -11,7 +11,7 @@ $columns = array(
 	array('title'=>'Browser'),
 	array('title'=>'Platform'),
 	array('title'=>'Engine Version', 'class'=>'right'),
-	array('title'=>'Css Grade', 'class'=>'right')
+	array('title'=>'Css Grade', 'className'=>'right')
 );
 
 $data = array(

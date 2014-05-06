@@ -14,12 +14,13 @@ include '../DataTable.php';
 use rOpenDev\DataTablesPHP\DataTable;
 
 $columns = array(
-	'first_name'=> array('title'=>'First Name'),
-	'last_name' => array('title'=>'Last Name'),
-	'email' 	=> array('title'=>'Email', 'orderable' => false, 'searchable'=>false),
-	'office'	=> array('title'=>'Office'),
-	'age' 		=> array('title'=>'Age', 'class'=>'right'),
-	'sal' 		=> array('title'=>'Salary', 'class'=>'right', 'formatter'=>null, 'sql_name' => 'salary', 'sql_table'=>'datatables_demo_join_salary')
+	array('data'=>'first_name', 'title'=>'First Name'),
+	array('data'=>'last_name', 'title'=>'Last Name'),
+	array('data'=>'email', 'title'=>'Email', 'orderable' => false, 'searchable'=>false),
+	array('data'=>'office', 'title'=>'Office'),
+	array('data'=>'age', 'title'=>'Age', 'class'=>'right'),
+	array('data'=>'sal', 'title'=>'Salary', 'class'=>'right', 'formatter'=>null, 'sql_name' => 'salary', 'sql_table'=>'datatables_demo_join_salary'),
+	array('title'=>'Delete', 'formatter'=>function($data){return '[X='.$data['id'].']';}, 'orderable'=>false, 'searchable'=>false)
 );
 
 $unsetColumns = array(
@@ -33,13 +34,14 @@ $ajax = array(
 );
 $dataTable = DataTable::instance('oTable');
 $dataTable->setColumns($columns)
+		  ->setUnsetColumn(array('data'=>'id', 'table'=>'datatables_demo')) // We can use id in a formatter function
           ->setColumnFilterActive()
           ->setServerSide($ajax);
 
 
 if(isset($_REQUEST['draw'])) {
 
-	$dataTable->setTable('datatables_demo_join');
+	$dataTable->setFrom('datatables_demo_join');
 	$dataTable->setJoin('datatables_demo_join_salary', array('datatables_demo_join'=>'id', 'datatables_demo_join_salary'=>'id'));
 
 	$queries = $dataTable->generateSQLRequest($_REQUEST);
