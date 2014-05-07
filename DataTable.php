@@ -153,7 +153,8 @@ class DataTable {
 	 * @param array $data
 	 */
 	function setData($data) {
-		$objectize = is_string(array_keys($data[0])[0]) ? true : false;
+		$k = array_keys($data[0]); // We check the first key  from the first line
+		$objectize = is_string($k[0]) ? true : false;
 		for($i=0;$i<count($data);++$i)
 			$data[$i] = $objectize ? (object) $data[$i] : $data[$i];
 		$this->setJsInitParameter('data',  $data);
