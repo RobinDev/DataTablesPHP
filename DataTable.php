@@ -113,7 +113,6 @@ class DataTable {
 	 *						* SQL params : TO CONSTRUCT !!
 	 */
 	function setColumn($params) {
-		$jsParams = $params;
 		$this->columns[] = $params;
 
 		$k = isset($params['parent'])?md5($params['parent'], true):++$this->iThead;
