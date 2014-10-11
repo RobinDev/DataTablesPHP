@@ -1,17 +1,22 @@
 <?php
-/**
- * Generate Javascript & Html + set Initial Parameters for datatables.js
- */
 
 include '../DataTable.php';
+
 use rOpenDev\DataTablesPHP\DataTable;
 
 $columns = array(
 	array('title'=>'Rendering Engine'),
 	array('title'=>'Browser'),
 	array('title'=>'Platform'),
-	array('title'=>'Engine Version', 'class'=>'right'),
-	array('title'=>'Css Grade', 'className'=>'right')
+	array(
+		'title'=>'Engine Version',
+		'className'=>'right'
+	),
+	array(
+		'title'=>'Css Grade',
+		'className'=>'right',
+		'sFilter' => array('type'=>'text')
+	)
 );
 
 $data = array(
@@ -59,26 +64,25 @@ $language = array(
 	)
 );
 
-$dataTable = DataTable::instance('exmample');
-$dataTable->setJsInitParameter('language', $language)
+$dataTable = DataTable::instance('example');
+$dataTable->setJsInitParam('language', $language)
           ->setColumns($columns)
-          ->setColumnFilterActive()
           ->setData($data);
 
 ?>
 <html>
 	<head>
-		<title>Basic Configuration : Generate Html and Javascript</title>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1-rc2/jquery.min.js"></script>
-		<link href="//cdn.datatables.net/1.10.0-rc.1/css/jquery.dataTables.css" rel="stylesheet">
-		<script src="//cdn.datatables.net/1.10.0-rc.1/js/jquery.dataTables.js"></script>
-		<script src="https://raw.githubusercontent.com/RobinDev/jquery.dataTables.columnFilter.js/master/jquery.dataTables.columnFilter.js"></script>
+		<title>Basic Configuration Example</title>
+		<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<link href="//cdn.datatables.net/1.10.3/css/jquery.dataTables.css" rel="stylesheet">
+		<script src="//cdn.datatables.net/1.10.3/js/jquery.dataTables.js"></script>
 		<script>
 		$(document).ready(function() {
 			<?php echo $dataTable->getJavascript(); ?>
 		});
 		</script>
+		<style>
+		.right { text-align:right; }
+		</style>
 	</head>
-	<body>
-
-<?php echo $dataTable->getHtml();
+	<?php echo $dataTable->getHtml(); ?>
