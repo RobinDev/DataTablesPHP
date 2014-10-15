@@ -598,7 +598,11 @@ class DataTable {
 									.$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '')
 									.$join
 									.' '.$where.' '.$order.' '.$limit.';',
-			'recordsFiltered' => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count FROM '.$this->table.$join.' '.$where.' '.$order,
+			'recordsFiltered' => $this->exactCount === false ?
+									'SELECT FOUND_ROWS() count;'
+									: 'SELECT COUNT(1) as count FROM '
+									.$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '')
+									.$join.' '.$where.' '.$order,
 			'recordsTotal'	  => 'SELECT COUNT(*) count FROM '.$this->table.';'
 		);
 	}
@@ -771,12 +775,13 @@ class DataTable {
 			return $this->toSQLColumn($column['sFilter'], $onlyAlias, false);
 		}
 
+		$quote = !isset($column['protect_sql']) || $column['protect_sql']  ? '`' : '';
 		// Alias ne correspondrait pas à Name ?!!!!
+		$table = isset($column['sql_table']) ? $column['sql_table'] : $this->aliasTable;
 		return $onlyAlias === 1 && isset($column['alias']) ?
 					$column['alias'] :
-					'`'.(isset($column['sql_table']) ?
-						$column['sql_table'] : $this->aliasTable).'`.'
-						.'`'.(isset($column['sql_name']) ? $column['sql_name'] : $column['data']).'`'
+					$quote.$table.$quote.(empty($table) ? '' : '.')
+						.$quote.(isset($column['sql_name']) ? $column['sql_name'] : $column['data']).$quote
 					.($onlyAlias === 0 && isset($column['alias']) ? ' AS '.$column['alias'] : '');
 	}
 
@@ -830,7 +835,7 @@ class DataTable {
 			}
 		}
 		catch( Exception $Exception ) {
-			$this->sendFatal($pdo->errorInfo()[0].' - '.$pdo->errorInfo()[2], $this->toSend);
+			$this->sendFatal($pdo->errorInfo()[0].' - '.$pdo->errorInfo()[2].chr(10).$queries['data'], $this->toSend);
 		}
 
 		if($csv) {
@@ -842,7 +847,7 @@ class DataTable {
 			$q = $pdo->query($queries['recordsFiltered']);
 		}
 		catch( Exception $Exception ) {
-			$dataTable->sendFatal($pdo->errorInfo()[0].' - '.$pdo->errorInfo()[2], $this->toSend);
+			$this->sendFatal($pdo->errorInfo()[0].' - '.$pdo->errorInfo()[2].chr(10).$queries['recordsFiltered'], $this->toSend);
 		}
 		$recordsFiltered = $q->fetch()['count'];
 
@@ -851,7 +856,7 @@ class DataTable {
 			$q = $pdo->query($queries['recordsTotal']);
 		}
 		catch( Exception $Exception ) {
-			$dataTable->sendFatal($pdo->errorInfo()[0].' - '.$pdo->errorInfo()[2], $this->toSend);
+			$this->sendFatal($pdo->errorInfo()[0].' - '.$pdo->errorInfo()[2].chr(10).$queries['recordsTotal'], $this->toSend);
 		}
 		$recordsTotal = $q->fetch()['count'];
 
