@@ -594,7 +594,9 @@ class DataTable {
 		$join = isset($this->join) ? ' '.implode(' ', $this->join) : '';
 
 		return array(
-			'data' 			  => 'SELECT SQL_CALC_FOUND_ROWS '.implode(',',$columns).' FROM '
+			'data' 			  => 'SELECT '
+									.($this->exactCount === false ? 'SQL_CALC_FOUND_ROWS ':'')
+									.implode(',',$columns).' FROM '
 									.$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '')
 									.$join
 									.' '.$where.' '.$order.' '.$limit.';',
