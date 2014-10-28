@@ -271,6 +271,9 @@ class DataTable {
 	 * @param array $data
 	 */
 	function setData($data) {
+		if(!isset($data[0])) {
+			throw new \LogicException('Aucune donnée soumise');
+		}
 		$k = array_keys($data[0]); // Check the first key  from the first line
 		$objectize = is_string($k[0]) ? true : false;
 		for($i=0;$i<count($data);++$i)
@@ -506,6 +509,17 @@ class DataTable {
 		return $this;
 	}
 
+	static function formatOn($on, $r = '') {
+		if(isset($on[0]) && is_array($on[0])) {
+			foreach($on as $on2) {
+				$r = self::formatOn($on2, $r);
+			}
+		} else {
+			$on2 = array_keys($on);
+			$r .= (!empty($r) ? ' AND ' : '').'`'.key($on).'`.`'.current($on).'` = `'.next($on2).'`.`'.next($on).'`';
+		}
+		return $r;
+	}
 	/**
 	 * Join data from other tables
 	 *
@@ -517,8 +531,7 @@ class DataTable {
 	 * 					1 	Contain column or columns
 	 */
 	function setJoin($table, $on, $join = 'LEFT JOIN', $duplicate = false) {
-		$on2 = array_keys($on);
-		$this->join[] = $join.' '.$table.' ON `'.key($on).'`.`'.current($on).'` = `'.next($on2).'`.`'.next($on).'`';
+		$this->join[] = $join.' '.$table.' ON '.self::formatOn($on);
 		//$this->join[] = $join.' `'.$table.'` ON `'.$table.'`.`'.$on[$table].'` = `'.$this->table.'`.`'.$on[$this->table].'`';
 		if($duplicate !== false) {
 			$this->patchDuplicateRow['pKey'] = $duplicate[0];
@@ -706,7 +719,6 @@ class DataTable {
 
 	/**
 	 * Generate the filter for a column
-	 * Why static ? Because i needed to use the same function in a other project.
 	 */
 	static function _generateSQLColumnFilter($column, $search_value, $pdoLink, $sRangeSeparator = '~') {
 
