@@ -545,6 +545,18 @@ class DataTable {
 	}
 
 	/**
+	 * Group by a SQL column
+	 *
+	 * @param string $column
+	 *
+	 * @return self
+	 */
+	function setGroupBy($column) {
+		$this->groupBy = (isset($this->groupBy) ? $this->groupBy.',':'').$column;
+		return $this;
+	}
+
+	/**
 	* Create the data output array for the DataTables rows
 	*
 	* @param array $data Data from the SQL get
@@ -612,7 +624,10 @@ class DataTable {
 									.implode(',',$columns).' FROM '
 									.$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '')
 									.$join
-									.' '.$where.' '.$order.' '.$limit.';',
+									.' '.$where
+									.(isset($this->groupBy) ? ' GROUP BY '.$this->groupBy : '')
+									.' '.$order
+									.' '.$limit.';',
 			'recordsFiltered' => $this->exactCount === false ?
 									'SELECT FOUND_ROWS() count;'
 									: 'SELECT COUNT(1) as count FROM '
