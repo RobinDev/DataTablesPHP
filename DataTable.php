@@ -898,8 +898,8 @@ class DataTable {
      *
      * @return string
      */
-    static public function _generateSQLColumnFilter($column, $search_value, $pdoLink, $sRangeSeparator = '~') {
-
+    static public function _generateSQLColumnFilter($column, $search_value, $pdoLink, $sRangeSeparator = '~')
+    {
         if (preg_match("/^\[(=|!=)\]$/i", $search_value, $match)) {
             return $column.' '.$match[1].' '.$pdoLink->quote('');
         }
@@ -952,7 +952,8 @@ class DataTable {
      *
      * @return string
      */
-    protected function generateSQLColumnFilter($column, $search_value) {
+    protected function generateSQLColumnFilter($column, $search_value)
+    {
         return self::_generateSQLColumnFilter($column, $search_value, $this->pdoLink, isset($this->sRangeSeparator) ? $this->sRangeSeparator : '~');
     }
 
@@ -967,8 +968,8 @@ class DataTable {
      *
      * @return string
      */
-    protected function toSQLColumn($column, $onlyAlias = 0, $filter = false) {
-
+    protected function toSQLColumn($column, $onlyAlias = 0, $filter = false)
+    {
         if (!isset($column['sql_name']) && !isset($column['data']))
             self::sendFatal('Houston, we have a problem with one of your column : can\'t draw it SQL name because it don\'t have data or sql_name define.'."\n".json_encode($column));
 
@@ -993,7 +994,8 @@ class DataTable {
      *
      * @return string
      */
-    protected static function fromSQLColumn($column) {
+    protected static function fromSQLColumn($column)
+    {
         return isset($column['alias']) ? $column['alias'] : (isset($column['sql_name']) ? $column['sql_name'] : $column['data']);
     }
 
@@ -1004,7 +1006,8 @@ class DataTable {
      * @param string $pKey
      * @param array $columns
      */
-    protected function patchDuplicateRow($d, $pKey, $columns) {
+    protected function patchDuplicateRow($d, $pKey, $columns)
+    {
         $id=$d[$pKey];
         if (isset($rData[$id])) {
             foreach($columns as $c => $separator) {
@@ -1023,8 +1026,8 @@ class DataTable {
      *
      * @return string Exit with the json result for Datatables.js
      */
-    public function exec($request, $csv = false) {
-
+    public function exec($request, $csv = false)
+    {
         if ($csv) {
             $this->request['length'] = -1;
         }
@@ -1082,7 +1085,8 @@ class DataTable {
      * @param string $k
      * @param string $v
      */
-    public function addToSend($k, $v) {
+    public function addToSend($k, $v)
+    {
         $this->toSend[$k] = $v;
     }
 
@@ -1095,7 +1099,8 @@ class DataTable {
      *
      * @return json output
      */
-    protected function sendData($data, $recordsFiltered, $recordsTotal) {
+    protected function sendData($data, $recordsFiltered, $recordsTotal)
+    {
         $toJson = array(
             'draw' => intval($this->request['draw']),
             'recordsTotal' => intval($recordsTotal),
@@ -1107,7 +1112,8 @@ class DataTable {
         exit(json_encode($toJson));
     }
 
-    static public function sendCsv($data) {
+    static public function sendCsv($data)
+    {
         header("Content-Disposition: attachment; filename=" . uniqid('dataExpl').'.csv');
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
@@ -1124,7 +1130,8 @@ class DataTable {
     * @param string $error  Message to send to the client
     * @param array  $toSend Others informations to transfer
     */
-    static public function sendFatal($error, $toSend = null) {
+    static public function sendFatal($error, $toSend = null)
+    {
         $toJson = array( "error" => $error );
         if (isset($toSend)) {
             $toJson = array_merge($toSend, $toJson);
@@ -1143,8 +1150,8 @@ class DataTable {
      *
      * @return string
      */
-    static public function arrayToCsv($array, $header_row = true, $col_sep = ",", $row_sep = "\n", $qut = '"')  {
-
+    static public function arrayToCsv($array, $header_row = true, $col_sep = ",", $row_sep = "\n", $qut = '"')
+    {
         if (!is_array($array) or !isset($array[0]) or !is_array($array[0])) return false;
         $output = '';
         if ($header_row) {
