@@ -1042,10 +1042,10 @@ class DataTable
         $id=$d[$pKey];
         if (isset($this->rData[$id])) {
             foreach($columns as $c => $separator) {
-                $this->rData[$id][$c] .= $separator.$d[$c];
+                $this->rData[$id][$c] .= $separator.$d[$id];
             }
         } else {
-            $this->rData[$id] = $d[$c];
+            $this->rData[$id] = $d[$id];
         }
     }
 
