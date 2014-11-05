@@ -40,6 +40,12 @@ class DataTable {
     protected $iThead = 0;
 
     /**
+     * @var array $theadChild
+     * @var array $thead
+     */
+    protected $theadChild = [], $thead = [];
+
+    /**
      * Initialization's Parameters for dataTables.js
      * @var array $jsInitParameters
      * @var array $jsonNotCompatible
@@ -96,16 +102,16 @@ class DataTable {
     /** SQL Part **/
 
     /**
-     * @var string $table
-     * @var string $aliasTable
-     * @var array  $join
-     * @var array  $patchDuplicateRow
-     * @var string $groupBy
-     * @var array  $request
-     * @var array  $initColumnSearch
-     * @var string $sRangeSeparator
-     * @var array  $rData
-     * @var array  $data
+     * @var string $table               .
+     * @var string $aliasTable          .
+     * @var array  $join                .
+     * @var array  $patchDuplicateRow   .
+     * @var string $groupBy             .
+     * @var array  $request             .
+     * @var array  $initColumnSearch    .
+     * @var string $sRangeSeparator     .
+     * @var array  $rData               .
+     * @var array  $data                .
      */
      protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch, $sRangeSeparator, $rData, $data;
 
@@ -172,8 +178,8 @@ class DataTable {
     /**
      * Add a dataTables.js Init Param
      *
-     * @param str $key   Contain param's key
-     * @param str $value Contain param's value
+     * @param str   $key   Contain param's key
+     * @param mixed $value Contain param's value
      *
      * @return self
      */
@@ -584,7 +590,6 @@ class DataTable {
                         .'<input class="form-control sSearch" type="text" value="'.(isset($column['data']) && isset($this->filters[$column['data']]) ? preg_replace('/^(\[(!|<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
                 return $r;
-                break;
             case 'number' : case 'date' :
                 $r = '<div class="input-group"><div class="input-group-addon">'
                         .($this->renderFilterOperators ?
@@ -602,7 +607,6 @@ class DataTable {
                         .'<input class="form-control sSearch" type="text" value="'.(isset($this->filters[$column['data']]) ? preg_replace('/^(\[(<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
                 return $r;
-                break;
             case 'select' :
                 $o='';
                 if (isset($sFilter['values'])) {
@@ -615,7 +619,6 @@ class DataTable {
                     // TODO
                 }
                 return '<select class="form-control sSearch"><option value=""></option>'.$o.'</select>';
-                break;
         }
     }
 
@@ -846,7 +849,12 @@ class DataTable {
         return $order;
     }
 
-    function setInitFilter($column, $filter) {
+    /**
+     * @param array  $column
+     * @param string $filter
+     */
+    function setInitFilter($column, $filter)
+    {
         $this->initColumnSearch[] = $this->generateSQLColumnFilter($this->toSQLColumn($column, 2, true), $filter);
     }
 
@@ -915,7 +923,7 @@ class DataTable {
     /**
      * Generate the filter for a column
      *
-     * @param array  $column
+     * @param string $column
      * @param string $search_value
      * @param object $pdoLink
      * @param string $sRangeSeparator
@@ -1035,10 +1043,10 @@ class DataTable {
         $id=$d[$pKey];
         if (isset($this->rData[$id])) {
             foreach($columns as $c => $separator) {
-                $this->rData[$id][$c] .= $separator.$d[$id][$c];
+                $this->rData[$id][$c] .= $separator.$d[$c];
             }
         } else {
-            $this->rData[$id] = $d;
+            $this->rData[$id] = $d[$c];
         }
     }
 
