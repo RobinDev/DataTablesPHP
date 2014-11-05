@@ -20,8 +20,16 @@ use \Exception;
 class DataTable {
 
     /**
+     * Contain the table's id
+     * @var string
+     */
+    protected $tableName;
+
+    /**
      * footer: Permet de dessiner le footer via html
      * header: Idem pour le thead
+     * @var bool $footer
+     * @var bool $header
      */
     protected $footer = false, $header = false;
 
@@ -83,7 +91,23 @@ class DataTable {
     protected $individualColumnFiltering = false;
 
 
-    private static $instance = null;
+    private static $instance;
+
+    /** SQL Part **/
+
+    /**
+     * @var string $table
+     * @var string $aliasTable
+     * @var array  $join
+     * @var array  $patchDuplicateRow
+     * @var string $groupBy
+     * @var array  $request
+     * @var array  $initColumnSearch
+     * @var string $sRangeSeparator
+     * @var array  $rData
+     * @var array  $data
+     */
+     protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch, $sRangeSeparator, $rData, $data;
 
     /**
      * Correspond to the column options for DataTables javascript initialization (see the doc : DataTables > Refererences > Column)
@@ -274,7 +298,7 @@ class DataTable {
     public function setUnsetColumns($columns)
     {
         foreach($columns as $c) {
-            $this->unsetColumns($c);
+            $this->setUnsetColumn($c);
         }
         return $this;
     }
@@ -885,7 +909,7 @@ class DataTable {
             $where .= ($where === '' ?  '' : ' AND '). implode(' AND ', $columnSearch);
         }
 
-        return $where = $where !== '' ? 'WHERE '.$where : '';
+        return $where !== '' ? 'WHERE '.$where : '';
     }
 
     /**
@@ -1009,9 +1033,9 @@ class DataTable {
     protected function patchDuplicateRow($d, $pKey, $columns)
     {
         $id=$d[$pKey];
-        if (isset($rData[$id])) {
+        if (isset($this->rData[$id])) {
             foreach($columns as $c => $separator) {
-                $this->rData[$id][$c] .= $separator.$data[$i][$c];
+                $this->rData[$id][$c] .= $separator.$d[$id][$c];
             }
         } else {
             $this->rData[$id] = $d;
