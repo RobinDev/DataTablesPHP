@@ -1,23 +1,22 @@
 <?php
+namespace rOpenDev\DataTablesPHP;
+
+use \Exception;
+
 /**
  * PHP DataTablesPHP wrapper class for DataTables.js (Html, Javascript & Server Side). http://www.robin-d.fr/DataTablesPHP/
  * Server-side part inspired from [Allan Jardine's Class SSP](https://github.com/DataTables/DataTables/blob/master/examples/server_side/scripts/ssp.class.php)
  *
  * Compatible with DataTables 1.10.x
  *
- * @author     Original Author Robin <contact@robin-d.fr>
+ * @author     Original Author Robin <contact@robin-d.fr> http://www.robin-d.fr/
  * @link       http://www.robin-d.fr/DataTablesPHP/
  * @link       https://github.com/RobinDev/DataTablesPHP
  * @since      File available since Release 2014.05.01
  */
-
 // formatter : A approfondir avec call_user_func_array
-
-namespace rOpenDev\DataTablesPHP;
-
-use \Exception;
-
-class DataTable {
+class DataTable
+{
 
     /**
      * Contain the table's id
