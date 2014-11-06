@@ -804,8 +804,16 @@ class DataTable
         return [
             'data'             => 'SELECT '.$select.$from.$join.$where.$groupBy.$order.$limit.';',
             'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy,
-            'recordsTotal'     => 'SELECT COUNT(*) count FROM '.$from.$join.$iWhere.$groupBy.';',
+            'recordsTotal'     => $this->recordsTotal($from.$join.$iWhere),
         ];
+    }
+
+    /**
+     * Render the SQL Query to get the total
+     */
+    protected function recordsTotal($from_join_iWhere)
+    {
+        return 'SELECT COUNT('.(isset($this->groupBy) ? 'DISTINCT '.$this->groupBy : '*').') count '.$from_join_iWhere.';';
     }
 
     /**
@@ -899,8 +907,8 @@ class DataTable
     protected function filters()
     {
         $where = $this->initFilters();
-        $where .= ($where === '' ? '' : ' AND ').'('.$this->globalFilter().')';
-        $where .= ($where === '' ?  '' : ' AND ').$this->individualColumnFilters();
+        $where .= (empty($where) ? '' : ' AND ').$this->globalFilter();
+        $where .= (empty($where) ?  '' : ' AND ').$this->individualColumnFilters();
         return $where;
     }
 
@@ -935,7 +943,7 @@ class DataTable
                 }
             }
         }
-        return $globalSearch;
+        return empty($globalSearch) ? '' : '('.$globalSearch.')';
     }
 
     /**
@@ -949,9 +957,9 @@ class DataTable
         if (isset($this->individualColumnFiltering)) {
             $this->sRangeSeparator = isset($this->sRangeSeparator) ? $this->sRangeSeparator : '~';
             for ( $i=0, $ien=count($this->columns) ; $i<$ien ; $i++ ) {
-                if ((!isset($column['searchable']) || $column['searchable'] === true) && !empty($this->request['columns'][$i]['search']['value'])) {
+                if (self::isSearchable($this->columns[$i]) && !empty($this->request['columns'][$i]['search']['value'])) {
                     $search_value = trim($this->request['columns'][$i]['search']['value']);
-                    $key = $this->toSQLColumn($column, 2, true);
+                    $key = $this->toSQLColumn($this->columns[$i], 1, true);
                     $columnSearch .= (!empty($columnSearch)?' AND':' ').$this->generateSQLColumnFilter($key, $search_value);
                 }
             }
