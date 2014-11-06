@@ -939,7 +939,7 @@ class DataTable
         if (isset($this->request['search']) && !empty($this->request['search']['value'])) {
             for ($i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++) {
                 if (self::isSearchable($this->columns[$i])) {
-                    $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$this->toSQLColumn($column, 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
+                    $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$this->toSQLColumn($this->columns[$i], 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
                 }
             }
         }
