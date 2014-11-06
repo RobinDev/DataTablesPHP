@@ -443,13 +443,14 @@ class DataTable
      */
     protected function getColumnsForJs()
     {
+        $rColumns = [];
         foreach($this->columns as $c) {
             $c = self::getColumnForJs($c);
             if ($c!==null) {
                 $rColumns[] = $c;
             }
         }
-        return isset($rColumns)?$rColumns:null;
+        return !empty($rColumns)?$rColumns:null;
     }
 
     /**
@@ -461,12 +462,13 @@ class DataTable
      */
     protected static function getColumnForJs($column)
     {
+        $rColumn = [];
         foreach($column as $k=>$v) {
             if (in_array($k, self::$columnParams)) {
                 $rColumn[$k] = $v;
             }
         }
-        return isset($rColumn) ? (object) $rColumn : null;
+        return !empty($rColumn) ? (object) $rColumn : null;
     }
 
     /**
@@ -783,35 +785,54 @@ class DataTable
         $limit = $this->limit();
         $order = $this->order();
         $where = $this->filter();
+        $join = $this->join();
+        $from = $this->from();
+        $groupBy = $this->groupBy();
 
+        $columns = [];
         foreach($this->columns as $c) {
             if (isset($c['data'])||isset($c['sql_name'])) {
                 $columns[] = $this->toSQLColumn($c);
             }
         }
-
-        foreach($this->unsetColumns as $c)
+        foreach($this->unsetColumns as $c) {
             $columns[] = $this->toSQLColumn($c);
+        }
+        $select = ($this->exactCount === false ? 'SQL_CALC_FOUND_ROWS ':'').implode(',',$columns);
 
-        $join = isset($this->join) ? ' '.implode(' ', $this->join) : '';
+        return [
+            'data'             => 'SELECT '.$select.$from.$join.$where.$groupBy.$order.$limit.';',
+            'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy
+            'recordsTotal'     => 'SELECT COUNT(*) count FROM '.$this->table.';'
+        ];
+    }
 
-        return array(
-            'data'               => 'SELECT '
-                                    .($this->exactCount === false ? 'SQL_CALC_FOUND_ROWS ':'')
-                                    .implode(',',$columns).' FROM '
-                                    .$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '')
-                                    .$join
-                                    .' '.$where
-                                    .(isset($this->groupBy) ? ' GROUP BY '.$this->groupBy : '')
-                                    .' '.$order
-                                    .' '.$limit.';',
-            'recordsFiltered' => $this->exactCount === false ?
-                                    'SELECT FOUND_ROWS() count;'
-                                    : 'SELECT COUNT(1) as count FROM '
-                                    .$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '')
-                                    .$join.' '.$where.' '.$order,
-            'recordsTotal'      => 'SELECT COUNT(*) count FROM '.$this->table.';'
-        );
+    /**
+     * SQL rendering of the GroupBy part
+     *
+     * @return string
+     */
+    function groupBy() {
+        return (isset($this->groupBy) ? ' GROUP BY '.$this->groupBy : '');
+    }
+
+
+    /**
+     * SQL rendering of the FROM part
+     *
+     * @return string
+     */
+    function from() {
+        return ' FROM '.$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '');
+    }
+
+    /**
+     * SQL rendering of the JOIN part
+     *
+     * @return string
+     */
+    function join() {
+        return isset($this->join) ? ' '.implode(' ', $this->join) : '';
     }
 
     /**
@@ -822,7 +843,7 @@ class DataTable
     protected function limit()
     {
         if (isset($this->request['start']) && $this->request['length'] != -1) {
-            return 'LIMIT '.intval($this->request['start']).','.intval($this->request['length']);
+            return ' LIMIT '.intval($this->request['start']).','.intval($this->request['length']);
         }
     }
 
@@ -843,7 +864,7 @@ class DataTable
                     $orderBy[] = $this->toSQLColumn($column, 2).' '.($this->request['order'][$i]['dir'] === 'asc' ? 'ASC' : 'DESC');
                 }
             }
-            $order = 'ORDER BY '.implode(', ', $orderBy);
+            $order = ' ORDER BY '.implode(', ', $orderBy);
         }
         return $order;
     }
@@ -904,19 +925,19 @@ class DataTable
         // Combine the filters into a single string
         $where = '';
 
-        if ( count( $initColumnSearch ) ) {
+        if (count($initColumnSearch)) {
             $where .= implode(' AND ', $initColumnSearch);
         }
 
-        if ( count( $globalSearch ) ) {
+        if (count($globalSearch)) {
             $where .=  ($where === '' ? '' : ' AND ').'('.implode(' OR ', $globalSearch).')';
         }
 
-        if ( count( $columnSearch ) ) {
+        if (count($columnSearch)) {
             $where .= ($where === '' ?  '' : ' AND '). implode(' AND ', $columnSearch);
         }
 
-        return $where !== '' ? 'WHERE '.$where : '';
+        return $where !== '' ? ' WHERE '.$where : '';
     }
 
     /**
@@ -991,11 +1012,11 @@ class DataTable
     /**
      * Give a column's sql name
      *
-     * @param    $column        array
-     * @param    $onlyAlias    0 => return sql_table.sql_name AS alias
-     *                         1 => return alias
-     *                         2 => return sql_table.sql_name
-     * @param    $filter        Regarder
+     * @param array $column
+     * @param int   $onlyAlias   0: return sql_table.sql_name AS alias
+     *                           1: return alias
+     *                           2: return sql_table.sql_name
+     * @param mixed $filter
      *
      * @return string
      */
