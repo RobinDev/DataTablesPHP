@@ -784,7 +784,8 @@ class DataTable
 
         $limit = $this->limit();
         $order = $this->order();
-        $where = $this->filter();
+        $where = self::where($this->filters());
+        $iWhere = self::where($this->initFilters());
         $join = $this->join();
         $from = $this->from();
         $groupBy = $this->groupBy();
@@ -803,7 +804,7 @@ class DataTable
         return [
             'data'             => 'SELECT '.$select.$from.$join.$where.$groupBy.$order.$limit.';',
             'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy,
-            'recordsTotal'     => 'SELECT COUNT(*) count FROM '.$this->table.';',
+            'recordsTotal'     => 'SELECT COUNT(*) count FROM '.$from.$join.$iWhere.$groupBy.';',
         ];
     }
 
@@ -873,9 +874,21 @@ class DataTable
      * @param array  $column
      * @param string $filter
      */
-    function setInitFilter($column, $filter)
+    public function setInitFilter($column, $filter)
     {
-        $this->initColumnSearch[] = $this->generateSQLColumnFilter($this->toSQLColumn($column, 2, true), $filter);
+        $this->initColumnSearch = (!empty($this->initColumnSearch) ? ' AND' : ' ').$this->generateSQLColumnFilter($this->toSQLColumn($column, 2, true), $filter);
+    }
+
+    /**
+     * SQL Rendering for where
+     *
+     * @param string $filters
+     *
+     * @return string
+     */
+    protected static function where($filters)
+    {
+        return !empty($filters) ? ' WHERE '.$filters : '';
     }
 
     /**
@@ -883,61 +896,78 @@ class DataTable
      *
      * @return string
      */
-    protected function filter()
+    protected function filters()
     {
-        $initColumnSearch = isset($this->initColumnSearch) ? $this->initColumnSearch : [];
-        $globalSearch = [];
-        $columnSearch = [];
+        $where = $this->initFilters();
+        $where .= ($where === '' ? '' : ' AND ').'('.$this->globalFilter().')';
+        $where .= ($where === '' ?  '' : ' AND ').$this->individualColumnFilters();
+        return $where;
+    }
 
-
-        // Individual column initial filtering
+    /**
+     * SQL Rendering for the  initial filters set
+     *
+     * @return string SQL Part Query
+     */
+    protected function initFilters()
+    {
+        $initColumnSearch = isset($this->initColumnSearch) ? $this->initColumnSearch : '';
         foreach($this->columns as $c) {
             if (isset($c['sqlFilter'])) {
-                $initColumnSearch[] = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
+                $initColumnSearch .= (!empty($initColumnSearch)?' AND':' ').$this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
             }
         }
+        return $initColumnSearch;
+    }
 
-        // Global Search
-        if ( isset($this->request['search']) && !empty($this->request['search']['value'])) {
-
-            for ( $i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++ ) {
-                $column = $this->columns[$i];
-                if (!isset($column['searchable']) || $column['searchable'] === true) {
-                    $globalSearch[] = $this->toSQLColumn($column, 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
+     /**
+     * SQL Rendering for the global search
+     *
+     * @return string SQL Part Query
+     */
+    function globalFilter()
+    {
+        $globalSearch = '';
+        if (isset($this->request['search']) && !empty($this->request['search']['value'])) {
+            for ($i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++) {
+                if (self::isSearchable($this->columns[$i])) {
+                    $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$this->toSQLColumn($column, 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
                 }
             }
         }
+        return $globalSearch;
+    }
 
-        // Individual column filtering
+    /**
+     * SQL Rendering for the invidividual column filters
+     *
+     * @return string
+     */
+    protected function individualColumnFilters()
+    {
+        $columnSearch = '';
         if (isset($this->individualColumnFiltering)) {
             $this->sRangeSeparator = isset($this->sRangeSeparator) ? $this->sRangeSeparator : '~';
             for ( $i=0, $ien=count($this->columns) ; $i<$ien ; $i++ ) {
-                $column = $this->columns[$i];
                 if ((!isset($column['searchable']) || $column['searchable'] === true) && !empty($this->request['columns'][$i]['search']['value'])) {
                     $search_value = trim($this->request['columns'][$i]['search']['value']);
                     $key = $this->toSQLColumn($column, 2, true);
-                    $columnSearch[] = $this->generateSQLColumnFilter($key, $search_value);
+                    $columnSearch .= (!empty($columnSearch)?' AND':' ').$this->generateSQLColumnFilter($key, $search_value);
                 }
             }
         }
+        return $columnSearch;
+    }
 
-
-        // Combine the filters into a single string
-        $where = '';
-
-        if (count($initColumnSearch)) {
-            $where .= implode(' AND ', $initColumnSearch);
-        }
-
-        if (count($globalSearch)) {
-            $where .=  ($where === '' ? '' : ' AND ').'('.implode(' OR ', $globalSearch).')';
-        }
-
-        if (count($columnSearch)) {
-            $where .= ($where === '' ?  '' : ' AND '). implode(' AND ', $columnSearch);
-        }
-
-        return $where !== '' ? ' WHERE '.$where : '';
+    /**
+     * The $column is seachable ?
+     *
+     * @param array $column
+     *
+     * @return bool
+     */
+    protected static function isSearchable($column) {
+        return !isset($column['searchable']) || $column['searchable'] === true ? true : false;
     }
 
     /**
@@ -955,6 +985,7 @@ class DataTable
         if (preg_match("/^\[(=|!=)\]$/i", $search_value, $match)) {
             return $column.' '.$match[1].' '.$pdoLink->quote('');
         }
+
         if (preg_match("/^\[(!|<=|>=|=|<|>|<>|!=)\](.+)/i", $search_value, $match)) {
 
             if ($match[1] == '!=' && $match[2] == 'null') {
@@ -967,7 +998,7 @@ class DataTable
                 return $column.' NOT LIKE '.$pdoLink->quote('%'. $match[2] .'%');
             }
             else {
-                return $column.' '.$match[1].' '.$pdoLink->quote($match[2] == '-empty-' ? '' : $match[2]);
+                return $column.' '.$match[1].' '.$pdoLink->quote($match[2] == 'empty' ? '' : $match[2]);
             }
         }
 
