@@ -802,8 +802,8 @@ class DataTable
 
         return [
             'data'             => 'SELECT '.$select.$from.$join.$where.$groupBy.$order.$limit.';',
-            'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy
-            'recordsTotal'     => 'SELECT COUNT(*) count FROM '.$this->table.';'
+            'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy,
+            'recordsTotal'     => 'SELECT COUNT(*) count FROM '.$this->table.';',
         ];
     }
 
