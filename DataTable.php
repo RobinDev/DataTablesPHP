@@ -112,8 +112,9 @@ class DataTable
      * @var string $sRangeSeparator     .
      * @var array  $rData               .
      * @var array  $data                .
+     * @var string $having              .
      */
-     protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch, $sRangeSeparator, $rData, $data;
+     protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch, $sRangeSeparator, $rData, $data, $having = '';
 
     /**
      * Correspond to the column options for DataTables javascript initialization (see the doc : DataTables > Refererences > Column)
@@ -784,6 +785,7 @@ class DataTable
         $where = self::where($this->filters());
         $iWhere = self::where($this->initFilters());
         $join = $this->join();
+        $having = ' HAVING '.$this->having;
         $from = $this->from();
         $groupBy = $this->groupBy();
 
@@ -799,8 +801,8 @@ class DataTable
         $select = ($this->exactCount === false ? 'SQL_CALC_FOUND_ROWS ':'').implode(',',$columns);
 
         return [
-            'data'             => 'SELECT '.$select.$from.$join.$where.$groupBy.$order.$limit.';',
-            'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy,
+            'data'             => 'SELECT '.$select.$from.$join.$where.$groupBy.$having.$order.$limit.';',
+            'recordsFiltered'  => $this->exactCount === false ? 'SELECT FOUND_ROWS() count;' : 'SELECT COUNT(1) as count '.$from.$join.$where.$groupBy.$having,
             'recordsTotal'     => $this->recordsTotal($from.$join.$iWhere),
         ];
     }
@@ -910,6 +912,25 @@ class DataTable
     }
 
     /**
+     *
+     * @param string $where_condition
+     * @param array  $column
+     *
+     * @return string|false
+     */
+    function setHaving($where_condition, $column)
+    {
+        if (stripos(trim(str_replace(' ', '', $where_condition)), 'SUM(')===false) {
+            return false;
+        }
+        else {
+            $where_condition = str_replace($this->toSQLColumn($column, 2), $this->toSQLColumn($column, 1, true), $where_condition);
+            $this->having .= !empty($this->having) ? ' AND '.$where_condition : ' '.$where_condition;
+            return true;
+        }
+    }
+
+    /**
      * SQL Rendering for the  initial filters set
      *
      * @return string SQL Part Query
@@ -919,7 +940,10 @@ class DataTable
         $initColumnSearch = isset($this->initColumnSearch) ? $this->initColumnSearch : '';
         foreach($this->columns as $c) {
             if (isset($c['sqlFilter'])) {
-                $initColumnSearch .= (!empty($initColumnSearch)?' AND':' ').$this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
+                $where_condition = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
+                if(!$this->setHaving($where_condition, $c)) {
+                    $initColumnSearch .= (!empty($initColumnSearch)?' AND':' ').$this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
+                }
             }
         }
         return $initColumnSearch;
@@ -936,7 +960,10 @@ class DataTable
         if (isset($this->request['search']) && !empty($this->request['search']['value'])) {
             for ($i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++) {
                 if (self::isSearchable($this->columns[$i])) {
-                    $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$this->toSQLColumn($this->columns[$i], 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
+                    $where_condition = $this->toSQLColumn($this->columns[$i], 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
+                    if(!$this->setHaving($where_condition, $this->columns[$i])) {
+                        $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$where_condition;
+                    }
                 }
             }
         }
@@ -957,7 +984,10 @@ class DataTable
                 if (self::isSearchable($this->columns[$i]) && !empty($this->request['columns'][$i]['search']['value'])) {
                     $search_value = trim($this->request['columns'][$i]['search']['value']);
                     $key = $this->toSQLColumn($this->columns[$i], 2, true);
-                    $columnSearch .= (!empty($columnSearch)?' AND':' ').$this->generateSQLColumnFilter($key, $search_value);
+                    $where_condition = $this->generateSQLColumnFilter($key, $search_value);
+                    if(!$this->setHaving($where_condition, $this->columns[$i])) {
+                        $columnSearch .= (!empty($columnSearch)?' AND':' ').$where_condition;
+                    }
                 }
             }
         }
