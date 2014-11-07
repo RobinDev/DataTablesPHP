@@ -439,7 +439,7 @@ class DataTable
     /**
      * Return columns for js with only JS parameters (remove the other parameters we use in PHP)
      *
-     * @params mixed
+     * @return mixed
      */
     protected function getColumnsForJs()
     {
@@ -510,7 +510,7 @@ class DataTable
     /**
      * Return html table (min <table id=datatable></table>)
      *
-     * @params array $tAttributes To add attributes to the <table> eg. : class=>table-green
+     * @param array $tAttributes To add attributes to the <table> eg. : class=>table-green
      */
     public function getHtml($tAttributes = [])
     {
