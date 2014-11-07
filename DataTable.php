@@ -985,7 +985,7 @@ class DataTable
      *
      * @return string
      */
-    static public function _generateSQLColumnFilter($column, $search_value, $pdoLink, $sRangeSeparator = '~')
+    static public function _generateSQLColumnFilter($column, $search_value, PDO $pdoLink, $sRangeSeparator = '~')
     {
         if (preg_match("/^\[(=|!=)\]$/i", $search_value, $match)) {
             return $column.' '.$match[1].' '.$pdoLink->quote('');
