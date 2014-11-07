@@ -2,6 +2,7 @@
 namespace rOpenDev\DataTablesPHP;
 
 use \Exception;
+use \PDO;
 
 /**
  * PHP DataTablesPHP wrapper class for DataTables.js (Html, Javascript & Server Side). http://www.robin-d.fr/DataTablesPHP/
@@ -353,11 +354,7 @@ class DataTable
     public function setFilters($filters)
     {
         $this->filters = $filters;
-        /**
-        foreach($filters as $k => $v) {
-            $this->setInitFilter($this->getColumn($k), $v);
-        }
-        /**/
+
         return $this;
     }
 
@@ -392,7 +389,8 @@ class DataTable
         }
         $k = array_keys($data[0]); // Check the first key  from the first line
         $objectize = is_string($k[0]) ? true : false;
-        for($i=0;$i<count($data);++$i)
+        $n=count($data);
+        for($i=0;$i<$n;++$i)
             $data[$i] = $objectize ? (object) $data[$i] : $data[$i];
         $this->setJsInitParam('data',  $data);
         $this->renderFilterOperators = false;
@@ -651,7 +649,7 @@ class DataTable
      *
      * @return self
      */
-    public function setPdoLink($link)
+    public function setPdoLink(PDO $link)
     {
         $this->pdoLink = $link;
         return $this;
@@ -707,7 +705,6 @@ class DataTable
     public function setJoin($table, $on, $join = 'LEFT JOIN', $duplicate = false)
     {
         $this->join[] = $join.' '.$table.' ON '.self::formatOn($on);
-        //$this->join[] = $join.' `'.$table.'` ON `'.$table.'`.`'.$on[$table].'` = `'.$this->table.'`.`'.$on[$this->table].'`';
         if ($duplicate !== false) {
             $this->patchDuplicateRow['pKey'] = $duplicate[0];
             if (is_array($duplicate[1])) {
@@ -738,7 +735,7 @@ class DataTable
     *
     * @return array Formatted data in a row based format
     */
-    protected function data_output($data)
+    protected function dataOutput($data)
     {
         $out = [];
         $data=array_values($data); // Reset keys
@@ -959,7 +956,7 @@ class DataTable
             for ( $i=0, $ien=count($this->columns) ; $i<$ien ; $i++ ) {
                 if (self::isSearchable($this->columns[$i]) && !empty($this->request['columns'][$i]['search']['value'])) {
                     $search_value = trim($this->request['columns'][$i]['search']['value']);
-                    $key = $this->toSQLColumn($this->columns[$i], 1, true);
+                    $key = $this->toSQLColumn($this->columns[$i], 2, true);
                     $columnSearch .= (!empty($columnSearch)?' AND':' ').$this->generateSQLColumnFilter($key, $search_value);
                 }
             }
@@ -1126,8 +1123,6 @@ class DataTable
 
         $this->addToSend('sqlQuery', $queries['data']);
 
-        //dbv($queries['data']);
-
         $pdo = $this->pdoLink;
 
         try {
@@ -1196,7 +1191,7 @@ class DataTable
             'draw' => intval($this->request['draw']),
             'recordsTotal' => intval($recordsTotal),
             'recordsFiltered' => intval($recordsFiltered),
-            'data' => $this->data_output($data) );
+            'data' => $this->dataOutput($data) );
         if (isset($this->toSend)) {
             $toJson = array_merge($this->toSend, $toJson);
         }
@@ -1243,7 +1238,7 @@ class DataTable
      */
     static public function arrayToCsv($array, $header_row = true, $col_sep = ",", $row_sep = "\n", $qut = '"')
     {
-        if (!is_array($array) or !isset($array[0]) or !is_array($array[0])) return false;
+        if (!is_array($array) || !isset($array[0]) || !is_array($array[0])) return false;
         $output = '';
         if ($header_row) {
             foreach ($array[0] as $key => $val) {
