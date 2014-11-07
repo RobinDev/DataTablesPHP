@@ -785,7 +785,7 @@ class DataTable
         $where = self::where($this->filters());
         $iWhere = self::where($this->initFilters());
         $join = $this->join();
-        $having = ' HAVING '.$this->having;
+        $having = !empty($this->having) ? ' HAVING '.$this->having : '';
         $from = $this->from();
         $groupBy = $this->groupBy();
 
