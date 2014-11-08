@@ -820,7 +820,8 @@ class DataTable
      *
      * @return string
      */
-    function groupBy() {
+    function groupBy()
+    {
         return (isset($this->groupBy) ? ' GROUP BY '.$this->groupBy : '');
     }
 
@@ -830,7 +831,8 @@ class DataTable
      *
      * @return string
      */
-    function from() {
+    function from()
+    {
         return ' FROM '.$this->table.($this->table != $this->aliasTable ? ' '.$this->aliasTable : '');
     }
 
@@ -839,7 +841,8 @@ class DataTable
      *
      * @return string
      */
-    function join() {
+    function join()
+    {
         return isset($this->join) ? ' '.implode(' ', $this->join) : '';
     }
 
@@ -941,7 +944,7 @@ class DataTable
         foreach($this->columns as $c) {
             if (isset($c['sqlFilter'])) {
                 $where_condition = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
-                if(!$this->setHaving($where_condition, $c)) {
+                if (!$this->setHaving($where_condition, $c)) {
                     $initColumnSearch .= (!empty($initColumnSearch)?' AND':' ').$this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
                 }
             }
@@ -961,7 +964,7 @@ class DataTable
             for ($i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++) {
                 if (self::isSearchable($this->columns[$i])) {
                     $where_condition = $this->toSQLColumn($this->columns[$i], 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
-                    if(!$this->setHaving($where_condition, $this->columns[$i])) {
+                    if (!$this->setHaving($where_condition, $this->columns[$i])) {
                         $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$where_condition;
                     }
                 }
@@ -985,7 +988,7 @@ class DataTable
                     $search_value = trim($this->request['columns'][$i]['search']['value']);
                     $key = $this->toSQLColumn($this->columns[$i], 2, true);
                     $where_condition = $this->generateSQLColumnFilter($key, $search_value);
-                    if(!$this->setHaving($where_condition, $this->columns[$i])) {
+                    if (!$this->setHaving($where_condition, $this->columns[$i])) {
                         $columnSearch .= (!empty($columnSearch)?' AND':' ').$where_condition;
                     }
                 }
