@@ -114,7 +114,7 @@ class DataTable
      * @var array  $data                .
      * @var string $having              .
      */
-     protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch, $sRangeSeparator, $rData, $data, $having = '';
+     protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch = [], $sRangeSeparator, $rData, $data, $having = '';
 
     /**
      * Correspond to the column options for DataTables javascript initialization (see the doc : DataTables > Refererences > Column)
@@ -940,7 +940,7 @@ class DataTable
      */
     protected function initFilters()
     {
-        $initColumnSearch = isset($this->initColumnSearch) ? $this->initColumnSearch : [];
+        $initColumnSearch = $this->initColumnSearch;
         foreach($this->columns as $c) {
             if (isset($c['sqlFilter'])) {
                 $where_condition = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
