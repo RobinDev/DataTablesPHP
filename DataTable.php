@@ -1162,12 +1162,13 @@ class DataTable
             $q = $pdo->query($queries['data']);
             $this->rData=[];
             // PATCH : Annoying JOIN wich duplicate row if there is different tag
-            while($d=$q->fetch()) {
-                if (isset($this->patchDuplicateRow)) {
+            if (isset($this->patchDuplicateRow)) {
+                while($d=$q->fetch()) {
                     $this->patchDuplicateRow($d, $this->patchDuplicateRow['pKey'], $this->patchDuplicateRow['columns']);
-                } else {
-                    $this->rData[] = $d;
                 }
+            }
+            else {
+                $this->rData = $q->fetchAll();
             }
         }
         catch( Exception $Exception ) {
@@ -1251,10 +1252,11 @@ class DataTable
     */
     static public function sendFatal($error, $toSend = null)
     {
-        $toJson = array( "error" => $error );
+        $toJson = ['error' => utf8_encode($error)];
         if (isset($toSend)) {
             $toJson = array_merge($toSend, $toJson);
         }
+
         exit(json_encode( $toJson ));
     }
 
