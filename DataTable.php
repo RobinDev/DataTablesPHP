@@ -940,7 +940,7 @@ class DataTable
      */
     protected function initFilters()
     {
-        $initColumnSearch = $this->initColumnSearch;
+        $initColumnSearch = isset($this->initColumnSearch) ? $this->initColumnSearch : [];
         foreach($this->columns as $c) {
             if (isset($c['sqlFilter'])) {
                 $where_condition = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
