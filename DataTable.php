@@ -909,8 +909,13 @@ class DataTable
     protected function filters()
     {
         $where = $this->initFilters();
-        $where .= (empty(trim($where)) ? '' : (empty($gf = $this->globalFilter()) ? '' : ' AND '.$gf));
-        $where .= (empty(trim($where)) ?  '' : (empty($gf = $this->individualColumnFilters()) ? '' : ' AND '.$gf));
+
+        $gf = $this->globalFilter();
+        $where .= (empty(trim($where)) ? $gf : (empty($gf) ? '' : ' AND '.$gf));
+
+        $gf = $this->individualColumnFilters();
+        $where .= (empty(trim($where)) ? $gf : (empty($gf) ? '' : ' AND '.$gf));
+
         return $where;
     }
 
