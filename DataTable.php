@@ -886,7 +886,7 @@ class DataTable
      */
     public function setInitFilter($column, $filter)
     {
-        $this->initColumnSearch = (!empty($this->initColumnSearch) ? ' AND' : ' ').$this->generateSQLColumnFilter($this->toSQLColumn($column, 2, true), $filter);
+        $this->initColumnSearch[] = $this->generateSQLColumnFilter($this->toSQLColumn($column, 2, true), $filter);
     }
 
     /**
@@ -909,8 +909,8 @@ class DataTable
     protected function filters()
     {
         $where = $this->initFilters();
-        $where .= (empty($where) ? '' : ' AND ').$this->globalFilter();
-        $where .= (empty($where) ?  '' : ' AND ').$this->individualColumnFilters();
+        $where .= (empty(trim($where)) ? '' : (empty($gf = $this->globalFilter()) ? '' : ' AND '.$gf));
+        $where .= (empty(trim($where)) ?  '' : (empty($gf = $this->individualColumnFilters()) ? '' : ' AND '.$gf));
         return $where;
     }
 
@@ -928,7 +928,7 @@ class DataTable
         }
         else {
             $where_condition = str_replace($this->toSQLColumn($column, 2), $this->toSQLColumn($column, 1, true), $where_condition);
-            $this->having .= !empty($this->having) ? ' AND '.$where_condition : ' '.$where_condition;
+            $this->having .= !empty(trim($this->having)) ? ' AND '.$where_condition : ' '.$where_condition;
             return true;
         }
     }
@@ -940,16 +940,16 @@ class DataTable
      */
     protected function initFilters()
     {
-        $initColumnSearch = isset($this->initColumnSearch) ? $this->initColumnSearch : '';
+        $initColumnSearch = $this->initColumnSearch;
         foreach($this->columns as $c) {
             if (isset($c['sqlFilter'])) {
                 $where_condition = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
                 if (!$this->setHaving($where_condition, $c)) {
-                    $initColumnSearch .= (!empty($initColumnSearch)?' AND':' ').$this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
+                    $initColumnSearch[] = $this->generateSQLColumnFilter($this->toSQLColumn($c, 2), $c['sqlFilter']);
                 }
             }
         }
-        return $initColumnSearch;
+        return implode(' AND ', $initColumnSearch);
     }
 
      /**
@@ -959,18 +959,18 @@ class DataTable
      */
     function globalFilter()
     {
-        $globalSearch = '';
+        $globalSearch = [];
         if (isset($this->request['search']) && !empty($this->request['search']['value'])) {
             for ($i=0, $ien=count($this->request['columns']) ; $i<$ien ; $i++) {
                 if (self::isSearchable($this->columns[$i])) {
                     $where_condition = $this->toSQLColumn($this->columns[$i], 2).' LIKE '.$this->pdoLink->quote('%'.$this->request['search']['value'].'%');
                     if (!$this->setHaving($where_condition, $this->columns[$i])) {
-                        $globalSearch .= (!empty($globalSearch) ? ' OR': ' ').$where_condition;
+                        $globalSearch[] = $where_condition;
                     }
                 }
             }
         }
-        return empty($globalSearch) ? '' : '('.$globalSearch.')';
+        return empty($globalSearch) ? '' : '('.implode(' OR ', $globalSearch).')';
     }
 
     /**
@@ -980,7 +980,7 @@ class DataTable
      */
     protected function individualColumnFilters()
     {
-        $columnSearch = '';
+        $columnSearch = [];
         if (isset($this->individualColumnFiltering)) {
             $this->sRangeSeparator = isset($this->sRangeSeparator) ? $this->sRangeSeparator : '~';
             for ( $i=0, $ien=count($this->columns) ; $i<$ien ; $i++ ) {
@@ -989,12 +989,12 @@ class DataTable
                     $key = $this->toSQLColumn($this->columns[$i], 2, true);
                     $where_condition = $this->generateSQLColumnFilter($key, $search_value);
                     if (!$this->setHaving($where_condition, $this->columns[$i])) {
-                        $columnSearch .= (!empty($columnSearch)?' AND':' ').$where_condition;
+                        $columnSearch[] = $where_condition;
                     }
                 }
             }
         }
-        return $columnSearch;
+        return implode(' AND ', $columnSearch);
     }
 
     /**
