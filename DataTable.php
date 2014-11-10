@@ -1132,10 +1132,10 @@ class DataTable
         $id=$d[$pKey];
         if (isset($this->rData[$id])) {
             foreach($columns as $c => $separator) {
-                $this->rData[$id][$c] .= $separator.$d[$id];
+                $this->rData[$id][$c] .= $separator.$d[$c];
             }
         } else {
-            $this->rData[$id] = $d[$id];
+            $this->rData[$id] = $d;
         }
     }
 
