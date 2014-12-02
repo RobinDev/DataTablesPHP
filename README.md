@@ -142,11 +142,11 @@ DataTable::instance('id')
     ->setJsInitParam($key, $value)           // http://datatables.net/reference/option/
     ->setJsInitParams($params)               // To set all params in one time
     ->setDom($dom)                           // Alias for setJsInitParameter('dom', $dom)
-    ->setColumn($params)                     // Add a column and there options to the table:
+    ->setColumn($params, $show = true)       // Add a column and there options to the table:
                                              // - Initialization Javascript Options (see the doc : DataTables.net > Refererences > Column)
                                              //  - PHP Options (parent for complexe header, sFilter, sql_table, sqlFilter... see l.169)
+                                             // if($show) will be printed in the table else will only be load via ajax
     ->setColumns($columns)                   // Add columns
-    ->setUnsetColumns($unsetColumns)         // To add in the SQL select columns wich are not print directly as table column (and use their data with formatter)
     ->setServerSide($ajax)                   // http://datatables.net/reference/option/ajax
     ->setAjax($ajax)                         // Alias for setJsInitParameter('ajax', $ajax)
     ->setFilters($ajax)                      // Set permanent filters for sql queries (where)
