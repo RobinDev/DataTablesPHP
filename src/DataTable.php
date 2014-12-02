@@ -49,12 +49,12 @@ class DataTable
     protected $filters = [];
 
     /** @var bool Active counters */
-     public $counters = true;
+    public $counters = true;
 
-     /** @var array Var contain other information to send to the dataTable via Json Server-Side. Eg : sql queries for debug. */
-     protected $toSend;
+    /** @var array Var contain other information to send to the dataTable via Json Server-Side. Eg : sql queries for debug. */
+    protected $toSend;
 
-     /** @var bool Active the visualization of operators when rendering fields (for MySQL) */
+    /** @var bool Active the visualization of operators when rendering fields (for MySQL) */
     public $renderFilterOperators = true;
 
     /**
@@ -63,7 +63,8 @@ class DataTable
      */
     protected $individualColumnFiltering = false;
 
-    private static $instance;
+    /** @var array */
+    private static $instance = [];
 
     /** SQL Part **/
 
@@ -80,7 +81,10 @@ class DataTable
      * @var array  $data                .
      * @var string $having              .
      */
-     protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch = [], $sRangeSeparator, $rData, $data, $having = '';
+    protected $table, $aliasTable, $join, $patchDuplicateRow, $groupBy, $request, $initColumnSearch = [], $sRangeSeparator, $rData, $data, $having = '';
+
+    /** @var \Symfony\Component\Translation\TranslatorInterface */
+    protected $translator;
 
     /**
      * Correspond to the column options for DataTables javascript initialization (see the doc : DataTables > Refererences > Column)
@@ -576,11 +580,11 @@ class DataTable
                 $r = '<div class="input-group"><div class="input-group-addon">'
                         .($this->renderFilterOperators ?
                         '<select class=form-control>'
-                            .'<option></option>'
-                            .$this->formatOption($column['data'], '[!]', '!')
-                            .$this->formatOption($column['data'], '[=]', '=')
-                            .$this->formatOption($column['data'], '[!=]', '!=')
-                            .$this->formatOption($column['data'], 'reg:', 'REGEXP')
+                            .'<option>'.$this->trans('').'</option>'
+                            .$this->formatOption($column['data'], '[!]', $this->trans('!'))
+                            .$this->formatOption($column['data'], '[=]', $this->trans('='))
+                            .$this->formatOption($column['data'], '[!=]',$this->trans('!='))
+                            .$this->formatOption($column['data'], 'reg:',$this->trans('REGEXP'))
                         .'</select>' : '').'</div>'
                         .'<input class="form-control sSearch" type="text" value="'.(isset($column['data']) && isset($this->filters[$column['data']]) ? preg_replace('/^(\[(!|<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
@@ -590,15 +594,15 @@ class DataTable
                 $r = '<div class="input-group"><div class="input-group-addon">'
                         .($this->renderFilterOperators ?
                         '<select class=form-control>'
-                            .'<option></option>'
-                            .$this->formatOption($column['data'], '[=]', '=')
-                            .$this->formatOption($column['data'], '[!=]', '!=')
-                            .$this->formatOption($column['data'], '[<=]', '<=')
-                            .$this->formatOption($column['data'], '[<]', '<')
-                            .$this->formatOption($column['data'], '[>=]', '>=')
-                            .$this->formatOption($column['data'], '[>]', '>')
-                            .$this->formatOption($column['data'], 'in:', 'IN(int,int,int...)')
-                            .$this->formatOption($column['data'], 'reg:', 'REGEXP')
+                            .'<option>'.$this->trans('').'</option>'
+                            .$this->formatOption($column['data'], '[=]',  $this->trans('='))
+                            .$this->formatOption($column['data'], '[!=]', $this->trans('!='))
+                            .$this->formatOption($column['data'], '[<=]', $this->trans('<='))
+                            .$this->formatOption($column['data'], '[<]',  $this->trans('<'))
+                            .$this->formatOption($column['data'], '[>=]', $this->trans('>='))
+                            .$this->formatOption($column['data'], '[>]',  $this->trans('>'))
+                            .$this->formatOption($column['data'], 'in:',  $this->trans('IN(int,int,int...)'))
+                            .$this->formatOption($column['data'], 'reg:', $this->trans('REGEXP'))
                         .'</select>' : '').'</div>'
                         .'<input class="form-control sSearch" type="text" value="'.(isset($this->filters[$column['data']]) ? preg_replace('/^(\[(<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
@@ -1243,5 +1247,31 @@ class DataTable
         }
 
         exit(json_encode($toJson));
+    }
+
+    /**
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator
+     *
+     * @return self
+     */
+    public function setTranslator(\Symfony\Component\Translation\TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+
+        return $this;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    protected function trans($text)
+    {
+        if (isset($this->translator)) {
+            return $this->translator->trans('dataTable.'.$text);
+        }
+
+        return $text;
     }
 }
