@@ -6,63 +6,64 @@ $pdo->exec('USE datatables_demo');
 $pdo->exec(file_get_contents('datatables_demo.sql'));
 /* ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### */
 
-include '../DataTable.php';
+include '../vendor/autoload.php';
+
 use rOpenDev\DataTablesPHP\DataTable;
 
 $columns = array(
-	array(
-		'data'=>'first_name',
-		'title'=>'First Name',
-		'sFilter'	=> array(
-			'type' => 'text'
-		)
-	),
-	array(
-		'data'=>'last_name',
-		'title'=>'Last Name'
-	),
-	array(
-		'data'=>'email',
-		'title'=>'Email',
-		'orderable' => false,
-		'searchable'=>false
-	),
-	array(
-		'data'=>'office',
-		'title'=>'Office'
-	),
-	array(
-		'data'=>'age',
-		'title'=>'Age',
-		'className'=>'right'
-	),
-	array(
-		'data'=>'sal',
-		'title'=>'Salary',
-		'className'=>'right',
-		'formatter'=>null,
-		'sql_name' => 'salary'
-	)
-);
-
-$unsetColumns = array(
-	array('data'=>'id')
+    array(
+        'data' => 'first_name',
+        'title' => 'First Name',
+        'sFilter'    => array(
+            'type' => 'text',
+        ),
+        'parent' => 'Name details',
+    ),
+    array(
+        'data' => 'last_name',
+        'title' => 'Last Name',
+        'parent' => 'Name details',
+    ),
+    array(
+        'data' => 'email',
+        'title' => 'Email',
+        'orderable' => false,
+        'searchable' => false,
+    ),
+    array(
+        'data' => 'office',
+        'title' => 'Office',
+    ),
+    array(
+        'data' => 'age',
+        'title' => 'Age',
+        'className' => 'right',
+    ),
+    array(
+        'data' => 'sal',
+        'title' => 'Salary',
+        'className' => 'right',
+        'formatter' => null,
+        'sql_name' => 'salary',
+    ),
+    array(
+        'data' => 'id',
+        'show' => false,
+    ),
 );
 
 $ajax = array(
-	'uri' => $_SERVER["REQUEST_URI"],
-	'type'=> 'POST'
+    'uri' => $_SERVER["REQUEST_URI"],
+    'type' => 'POST',
 );
 $dataTable = DataTable::instance('oTable');
 $dataTable->setColumns($columns)
           ->setServerSide($ajax);
 $dataTable->renderFilterOperators = false;
 
-
-if(isset($_REQUEST['draw'])) {
-
-	$dataTable->setFrom('datatables_demo')->setPdoLink($pdo);
-	$dataTable->exec($_REQUEST);
+if (isset($_REQUEST['draw'])) {
+    $dataTable->setFrom('datatables_demo')->setPdoLink($pdo);
+    $dataTable->exec($_REQUEST);
 }
 ?>
 <html>

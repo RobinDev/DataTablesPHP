@@ -10,73 +10,72 @@ $pdo->exec('USE datatables_demo');
 $pdo->exec(file_get_contents('datatables_demo_join.sql'));
 /* ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### */
 
-include '../DataTable.php';
+include '../vendor/autoload.php';
+
 use rOpenDev\DataTablesPHP\DataTable;
 
 $columns = array(
-	array(
-		'data'=>'first_name',
-		'title'=>'First Name',
-		'sFilter'	=> array(
-			'type' => 'text'
-		)
-	),
-	array(
-		'data'=>'last_name',
-		'title'=>'Last Name'
-	),
-	array(
-		'data'=>'email',
-		'title'=>'Email',
-		'orderable' => false,
-		'searchable'=>false
-	),
-	array(
-		'data'=>'office',
-		'title'=>'Office'
-	),
-	array(
-		'data'=>'age',
-		'title'=>'Age',
-		'className'=>'right'
-	),
-	array(
-		'data'=>'sal',
-		'sql_table'=>'datatables_demo_join_salary',
-		'sql_name' => 'salary',
-		'title'=>'Salary',
-		'className'=>'right',
-		'sql_name' => 'salary'
-	),
-	array(
-		'title'=>'Delete',
-		'formatter'=>function($data){return '[X='.$data['id'].']';},
-		'orderable'=>false,
-		'searchable'=>false
-	)
-);
-
-$unsetColumns = array(
-	array('data'=>'id')
+    array(
+        'data' => 'first_name',
+        'title' => 'First Name',
+        'sFilter'    => array(
+            'type' => 'text',
+        ),
+    ),
+    array(
+        'data' => 'last_name',
+        'title' => 'Last Name',
+    ),
+    array(
+        'data' => 'email',
+        'title' => 'Email',
+        'orderable' => false,
+        'searchable' => false,
+    ),
+    array(
+        'data' => 'office',
+        'title' => 'Office',
+    ),
+    array(
+        'data' => 'age',
+        'title' => 'Age',
+        'className' => 'right',
+    ),
+    array(
+        'data' => 'sal',
+        'sql_table' => 'datatables_demo_join_salary',
+        'sql_name' => 'salary',
+        'title' => 'Salary',
+        'className' => 'right',
+        'sql_name' => 'salary',
+    ),
+    array(
+        'title' => 'Delete',
+        'formatter' => function ($data) {return '[X='.$data['id'].']';},
+        'orderable' => false,
+        'searchable' => false,
+    ),
+    [
+        'data' => 'id',
+        'show' => false,
+    ],
 );
 
 $ajax = array(
-	'uri' => $_SERVER["REQUEST_URI"],
-	'type'=> 'GET'
+    'uri' => $_SERVER["REQUEST_URI"],
+    'type' => 'GET',
 );
 $dataTable = DataTable::instance('oTable');
 $dataTable->setColumns($columns)
-		  ->setUnsetColumns($unsetColumns)
           ->setServerSide($ajax);
 
+if (isset($_REQUEST['draw'])) {
+    $dataTable->setPdoLink($pdo);
+    $dataTable->setFrom('datatables_demo_join');
+    $dataTable->setJoin('datatables_demo_join_salary', array('datatables_demo_join' => 'id', 'datatables_demo_join_salary' => 'id'));
+    //$dataTable->setCounterActive(false);
 
-if(isset($_REQUEST['draw'])) {
-
-	$dataTable->setPdoLink($pdo);
-	$dataTable->setFrom('datatables_demo_join');
-	$dataTable->setJoin('datatables_demo_join_salary', array('datatables_demo_join'=>'id', 'datatables_demo_join_salary'=>'id'));
-
-	$dataTable->exec($_REQUEST);
+    $dataTable->exec($_REQUEST);
 }
  // <script src="http://jquery-datatables-column-filter.googlecode.com/svn/trunk/media/js/jquery.dataTables.columnFilter.js"></script>
 ?>
