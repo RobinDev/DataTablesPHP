@@ -726,9 +726,9 @@ class DataTable
 
                 if (isset($column['formatter'])) {
                     if (isset($column['data']) || isset($column['sql_name'])) {
-                        $row[ isset($column['data']) ? $column['data'] : $j ] = $column['formatter']($data[$i][ self::fromSQLColumn($column) ], $data[$i], $column);
+                        $row[ isset($column['data']) ? $column['data'] : $j ] = call_user_func($column['formatter'], $data[$i][ self::fromSQLColumn($column) ], $data[$i], $column);
                     } else {
-                        $row[ $j ] = $column['formatter']($data[$i]);
+                        $row[ $j ] = call_user_func($column['formatter'], $data[$i]);
                     }
                 } else {
                     // Compatibility with the json .
