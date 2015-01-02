@@ -1,6 +1,6 @@
 <?php
 
-namespace rOpenDev\Cache\Test;
+namespace rOpenDev\DataTablesPHP\Test;
 
 class DatatableTest extends \PHPUnit_Framework_TestCase
 {

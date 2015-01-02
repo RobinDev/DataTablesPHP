@@ -1,9 +1,9 @@
 <?php
 namespace rOpenDev\DataTablesPHP;
 
-use \rOpenDev\PHPToJS\PHPToJS;
-use \Exception;
-use \PDO;
+use rOpenDev\PHPToJS\PHPToJS;
+use Exception;
+use PDO;
 
 /**
  * PHP DataTablesPHP wrapper class for DataTables.js (Html, Javascript & Server Side). http://www.robin-d.fr/DataTablesPHP/
@@ -581,10 +581,10 @@ class DataTable
                         .($this->renderFilterOperators ?
                         '<select class=form-control>'
                             .'<option>'.$this->trans('').'</option>'
-                            .$this->formatOption($column['data'], '[!]', $this->trans('!'))
-                            .$this->formatOption($column['data'], '[=]', $this->trans('='))
-                            .$this->formatOption($column['data'], '[!=]',$this->trans('!='))
-                            .$this->formatOption($column['data'], 'reg:',$this->trans('REGEXP'))
+                            .$this->formatOption($column['data'], '[!]',  $this->trans('!'))
+                            .$this->formatOption($column['data'], '[=]',  $this->trans('='))
+                            .$this->formatOption($column['data'], '[!=]', $this->trans('!='))
+                            .$this->formatOption($column['data'], 'reg:', $this->trans('REGEXP'))
                         .'</select>' : '').'</div>'
                         .'<input class="form-control sSearch" type="text" value="'.(isset($column['data']) && isset($this->filters[$column['data']]) ? preg_replace('/^(\[(!|<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
@@ -940,7 +940,7 @@ class DataTable
         return implode(' AND ', $initColumnSearch);
     }
 
-     /**
+    /**
      * SQL Rendering for the global search
      *
      * @return string SQL Part Query
@@ -1232,13 +1232,13 @@ class DataTable
     }
 
     /**
-    * Throw a fatal error.
-    * This writes out an error message in a JSON string which DataTables will
-    * see and show to the user in the browser.
-    *
-    * @param string $error  Message to send to the client
-    * @param array  $toSend Others informations to transfer
-    */
+     * Throw a fatal error.
+     * This writes out an error message in a JSON string which DataTables will
+     * see and show to the user in the browser.
+     *
+     * @param string $error  Message to send to the client
+     * @param array  $toSend Others informations to transfer
+     */
     public static function sendFatal($error, $toSend = null)
     {
         $toJson = ['error' => utf8_encode($error)];

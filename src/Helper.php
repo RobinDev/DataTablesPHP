@@ -20,7 +20,7 @@ class Helper
      */
     public static function mapAttributes($attributes)
     {
-        return ' '.join(' ', array_map(
+        return ' '.implode(' ', array_map(
             function ($sKey) use ($attributes) {
                 return is_bool($attributes[$sKey]) ? ($attributes[$sKey] ? $sKey : '') : $sKey.'="'.$attributes[$sKey].'"';
             }, array_keys($attributes)
