@@ -185,7 +185,7 @@ class DataTable
      */
     public function setDom($dom)
     {
-        $this->setJsInitParam('sDom', $dom);
+        $this->setJsInitParam('dom', $dom);
 
         return $this;
     }

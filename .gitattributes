@@ -4,3 +4,4 @@
 /phpunit.xml.dist export-ignore
 /scrutinizer.yml export-ignore
 /tests export-ignore
+/examples export-ignore
