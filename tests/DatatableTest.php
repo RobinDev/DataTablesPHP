@@ -6,6 +6,9 @@ use PHPUnit_Framework_Assert;
 
 class DatatableTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var \rOpenDev\DataTablesPHP\DataTable */
+    protected $table;
+
     /**
      * Test that true does in fact equal true
      */

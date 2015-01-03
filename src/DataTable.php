@@ -644,7 +644,7 @@ class DataTable
     /**
      * Add the pdo link
      *
-     * @param object $link
+     * @param \PDO $link
      *
      * @return self
      */
@@ -758,7 +758,7 @@ class DataTable
      *
      * @return array SQL queries to execute (keys: data, recordsFiltered, recordsTotal)
      */
-    protected function generateSQLRequest($dtRequest)
+    protected function generateSQLRequest(array $dtRequest)
     {
         $this->request = $dtRequest;
 
@@ -791,10 +791,14 @@ class DataTable
 
     /**
      * Render the SQL Query to get the total
+     *
+     * @param string $fromJoinAndWhere
+     *
+     * @return string SQL Request
      */
-    protected function recordsTotal($from_join_iWhere)
+    protected function recordsTotal($fromJoinAndWhere)
     {
-        return 'SELECT COUNT('.(isset($this->groupBy) ? 'DISTINCT '.$this->groupBy : '*').') count '.$from_join_iWhere.';';
+        return 'SELECT COUNT('.(isset($this->groupBy) ? 'DISTINCT '.$this->groupBy : '*').') count '.$fromJoinAndWhere.';';
     }
 
     /**
@@ -906,7 +910,7 @@ class DataTable
      * @param string $where_condition
      * @param array  $column
      *
-     * @return string|false
+     * @return bool
      */
     public function setHaving($where_condition, $column)
     {
@@ -1004,7 +1008,7 @@ class DataTable
      *
      * @param string $column
      * @param string $search_value
-     * @param object $pdoLink
+     * @param \PDO $pdoLink
      * @param string $sRangeSeparator
      *
      * @return string
@@ -1052,7 +1056,7 @@ class DataTable
      *
      * @return string
      */
-    protected function generateSQLColumnFilter($column, $search_value)
+    protected function generateSQLColumnFilter(array $column, $search_value)
     {
         return self::_generateSQLColumnFilter($column, $search_value, $this->pdoLink, isset($this->sRangeSeparator) ? $this->sRangeSeparator : '~');
     }
@@ -1064,7 +1068,7 @@ class DataTable
      * @param int   $onlyAlias 0: return sql_table.sql_name AS alias
      *                         1: return alias
      *                         2: return sql_table.sql_name
-     * @param mixed $filter
+     * @param bool $filter
      *
      * @return string
      */
@@ -1108,7 +1112,7 @@ class DataTable
      * @param string $pKey
      * @param array  $columns
      */
-    protected function patchDuplicateRow($d, $pKey, $columns)
+    protected function patchDuplicateRow($d, $pKey, array $columns)
     {
         $id = $d[$pKey];
         if (isset($this->rData[$id])) {
