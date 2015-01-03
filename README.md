@@ -1,6 +1,8 @@
 [DataTablesPHP : PHP class to easily use DataTables.js](http://www.robin-d.fr/DataTablesPHP/)
 ================================================
 
+[![Build Status](https://travis-ci.org/RobinDev/DataTablesPHP.svg?branch=master)](https://travis-ci.org/RobinDev/DataTablesPHP)
+
 ##Table of contents
 * [Description](#description)
     * [Features](#features)
