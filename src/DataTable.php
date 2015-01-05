@@ -1135,7 +1135,7 @@ class DataTable
      *
      * @return string Exit with the json result for Datatables.js
      */
-    public function exec($request, $csv = false)
+    public function exec(array $request, $csv = false)
     {
         if ($csv) {
             $this->request['length'] = -1;
