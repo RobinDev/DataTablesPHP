@@ -1054,12 +1054,12 @@ class DataTable
     /**
      * Generate the filter for a column
      *
-     * @param array  $column
+     * @param string $column
      * @param string $search_value
      *
      * @return string
      */
-    protected function generateSQLColumnFilter(array $column, $search_value)
+    protected function generateSQLColumnFilter($column, $search_value)
     {
         return self::_generateSQLColumnFilter($column, $search_value, $this->pdoLink, isset($this->sRangeSeparator) ? $this->sRangeSeparator : '~');
     }
