@@ -610,6 +610,9 @@ class DataTable
                 return $r;
             case 'select' :
                 $o = '';
+                if (isset($sFilter['options'])) {
+                    $sFilter['values'] = $sFilter['options'];
+                }
                 if (isset($sFilter['values'])) {
                     foreach ($sFilter['values'] as $k => $v) {
                         $o .= '<option value="'.$k.'"'.(isset($column['data']) && isset($this->filters[$column['data']]) && $this->filters[$column['data']] == $k ? ' selected' : '').'>'.$v.'</option>';
