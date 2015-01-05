@@ -580,7 +580,7 @@ class DataTable
                 $r = '<div class="input-group"><div class="input-group-addon">'
                         .($this->renderFilterOperators ?
                         '<select class=form-control>'
-                            .'<option>'.$this->trans('').'</option>'
+                            .'<option value="">'.$this->trans('').'</option>'
                             .$this->formatOption($column['data'], '[!]',  $this->trans('!'))
                             .$this->formatOption($column['data'], '[=]',  $this->trans('='))
                             .$this->formatOption($column['data'], '[!=]', $this->trans('!='))
@@ -594,7 +594,7 @@ class DataTable
                 $r = '<div class="input-group"><div class="input-group-addon">'
                         .($this->renderFilterOperators ?
                         '<select class=form-control>'
-                            .'<option>'.$this->trans('').'</option>'
+                            .'<option value="">'.$this->trans('').'</option>'
                             .$this->formatOption($column['data'], '[=]',  $this->trans('='))
                             .$this->formatOption($column['data'], '[!=]', $this->trans('!='))
                             .$this->formatOption($column['data'], '[<=]', $this->trans('<='))
