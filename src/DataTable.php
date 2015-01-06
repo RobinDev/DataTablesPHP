@@ -854,7 +854,7 @@ class DataTable
     protected function order()
     {
         $order = '';
-        if ((!isset($this->request['draw']) || (isset($this->request['draw']) && $this->request['draw'] != 1)) && isset($this->request['order']) && count($this->request['order'])) {
+        if (isset($this->request['order']) && count($this->request['order'])) {
             $orderBy = [];
             for ($i = 0, $ien = count($this->request['order']);$i<$ien;$i++) {
                 $columnIdx = intval($this->request['order'][$i]['column']);
