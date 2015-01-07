@@ -581,12 +581,13 @@ class DataTable
                         .($this->renderFilterOperators ?
                         '<select class=form-control>'
                             .'<option value="">'.$this->trans('').'</option>'
-                            .$this->formatOption($column['data'], '[!]',  $this->trans('!'))
-                            .$this->formatOption($column['data'], '[=]',  $this->trans('='))
-                            .$this->formatOption($column['data'], '[!=]', $this->trans('!='))
-                            .$this->formatOption($column['data'], 'reg:', $this->trans('REGEXP'))
+                            .$this->formatOption($column['data'], '[!]',     $this->trans('!'))
+                            .$this->formatOption($column['data'], '[=]',     $this->trans('='))
+                            .$this->formatOption($column['data'], '[!=]',    $this->trans('!='))
+                            .$this->formatOption($column['data'], 'reg:',    $this->trans('REGEXP'))
+                            .$this->formatOption($column['data'], 'lenght:', $this->trans('Lenght'))
                         .'</select>' : '').'</div>'
-                        .'<input class="form-control sSearch" type="text" value="'.(isset($column['data']) && isset($this->filters[$column['data']]) ? preg_replace('/^(\[(!|<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
+                        .'<input class="form-control sSearch" type="text" value="'.(isset($column['data']) && isset($this->filters[$column['data']]) ? preg_replace('/^(\[(!|<=|>=|=|<|>|<>|!=)\]|reg:|in:|lenght:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
 
                 return $r;
@@ -1011,7 +1012,7 @@ class DataTable
      *
      * @param string $column
      * @param string $search_value
-     * @param \PDO $pdoLink
+     * @param \PDO   $pdoLink
      * @param string $sRangeSeparator
      *
      * @return string
@@ -1032,8 +1033,10 @@ class DataTable
             } else {
                 return $column.' '.$match[1].' '.$pdoLink->quote($match[2] == 'empty' ? '' : $match[2]);
             }
+        } elseif (strpos($search_value, 'lenght:') === 0) {
+            return 'CHAR_LENGTH('.$column.') = '.(int) substr($search_value, strlen('lenght:'));
         } elseif (strpos($search_value, 'reg:') === 0) { //&& $column['sFilter']['regex'] === true) {
-            return $column.' REGEXP '.$pdoLink->quote(substr($search_value, strlen('Reg:')));
+            return $column.' REGEXP '.$pdoLink->quote(substr($search_value, strlen('reg:')));
         } elseif (preg_match('/(.*)(!?'.$sRangeSeparator.')(.*)/i', $search_value, $matches) && !empty($matches[1]) && !empty($matches[3])) {
             // TODO : use type to format the search value (eg STR_TO_DATE)
                 return $column.($matches[2][0] == '!' ? ' NOT' : '')
@@ -1071,7 +1074,7 @@ class DataTable
      * @param int   $onlyAlias 0: return sql_table.sql_name AS alias
      *                         1: return alias
      *                         2: return sql_table.sql_name
-     * @param bool $filter
+     * @param bool  $filter
      *
      * @return string
      */
