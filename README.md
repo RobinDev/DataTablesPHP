@@ -2,6 +2,7 @@
 ================================================
 
 [![Build Status](https://travis-ci.org/RobinDev/DataTablesPHP.svg?branch=master)](https://travis-ci.org/RobinDev/DataTablesPHP)
+[![Total Downloads](https://img.shields.io/packagist/dt/ropendev/datatablesphp.svg?style=flat-square)](https://packagist.org/packages/ropendev/datatablesphp)
 
 ##Table of contents
 * [Description](#description)
