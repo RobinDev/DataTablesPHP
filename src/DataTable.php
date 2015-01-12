@@ -861,7 +861,7 @@ class DataTable
                 $columnIdx = intval($this->request['order'][$i]['column']);
                 $column = $this->columns[$columnIdx];
                 if (!isset($column['orderable']) || $column['orderable'] === true) {
-                    $orderBy[] = $this->toSQLColumn($column, 2).' '.($this->request['order'][$i]['dir'] === 'asc' ? 'ASC' : 'DESC');
+                    $orderBy[] = $this->toSQLColumn($column, 2).' '.(!isset($this->request['order'][$i]['dir']) || $this->request['order'][$i]['dir'] === 'asc' ? 'ASC' : 'DESC');
                 }
             }
             $order = ' ORDER BY '.implode(', ', $orderBy);
