@@ -762,7 +762,7 @@ class DataTable
      *
      * @return array SQL queries to execute (keys: data, recordsFiltered, recordsTotal)
      */
-    protected function generateSQLRequest(array $dtRequest)
+    public function generateSQLRequest(array $dtRequest)
     {
         $this->request = $dtRequest;
 
