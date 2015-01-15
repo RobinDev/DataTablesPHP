@@ -577,24 +577,24 @@ class DataTable
 
         switch ($sFilter['type']) {
             case 'text'   :
-                $r = '<div class="input-group"><div class="input-group-addon">'
+                $r = '<div class="input-group">'
                         .($this->renderFilterOperators ?
-                        '<select class=form-control>'
+                        '<div class="input-group-addon"><select class=form-control>'
                             .'<option value="">'.$this->trans('').'</option>'
                             .$this->formatOption($column['data'], '[!]',     $this->trans('!'))
                             .$this->formatOption($column['data'], '[=]',     $this->trans('='))
                             .$this->formatOption($column['data'], '[!=]',    $this->trans('!='))
                             .$this->formatOption($column['data'], 'reg:',    $this->trans('REGEXP'))
                             .$this->formatOption($column['data'], 'lenght:', $this->trans('Lenght'))
-                        .'</select>' : '').'</div>'
+                        .'</select></div>' : '')
                         .'<input class="form-control sSearch" type="text" value="'.(isset($column['data']) && isset($this->filters[$column['data']]) ? preg_replace('/^(\[(!|<=|>=|=|<|>|<>|!=)\]|reg:|in:|lenght:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
 
                 return $r;
             case 'number' : case 'date' :
-                $r = '<div class="input-group"><div class="input-group-addon">'
+                $r = '<div class="input-group">'
                         .($this->renderFilterOperators ?
-                        '<select class=form-control>'
+                        '<div class="input-group-addon"><select class=form-control>'
                             .'<option value="">'.$this->trans('').'</option>'
                             .$this->formatOption($column['data'], '[=]',  $this->trans('='))
                             .$this->formatOption($column['data'], '[!=]', $this->trans('!='))
@@ -604,7 +604,7 @@ class DataTable
                             .$this->formatOption($column['data'], '[>]',  $this->trans('>'))
                             .$this->formatOption($column['data'], 'in:',  $this->trans('IN(int,int,int...)'))
                             .$this->formatOption($column['data'], 'reg:', $this->trans('REGEXP'))
-                        .'</select>' : '').'</div>'
+                        .'</select></div>' : '')
                         .'<input class="form-control sSearch" type="text" value="'.(isset($this->filters[$column['data']]) ? preg_replace('/^(\[(<=|>=|=|<|>|<>|!=)\]|reg:|in:)/i', '', $this->filters[$column['data']]) : '').'">'
                     .'</div></div>';
 
