@@ -47,7 +47,6 @@ $columns = array(
         'sql_name' => 'salary',
         'title' => 'Salary',
         'className' => 'right',
-        'sql_name' => 'salary',
     ),
     array(
         'title' => 'Delete',
