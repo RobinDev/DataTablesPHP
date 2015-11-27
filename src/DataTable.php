@@ -227,6 +227,7 @@ class DataTable
             ];
             $this->thead[$k]['colspan'] = !isset($this->thead[$k]['colspan']) ? 1 : ($this->thead[$k]['colspan']+1);
             $this->thead[$k]['title']   = $params['parent'];
+            $this->thead[$k]['class']   = isset($params['className']) ? $params['className'] : null;
             $this->header = true;
         } else {
             if (isset($params['title'])) {
