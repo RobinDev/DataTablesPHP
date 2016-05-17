@@ -21,11 +21,11 @@ DataTablesPHP generates easily your DataTable Html or Javascript... with Server-
 **Compatible with the last version of DataTables (1.10.x).**
 
 ###Features
-* Generate html table (complexe header)
+* Generate html table (complex header)
 * Generate the Javascript related (Data can be set in the initial parameters or load via Ajax or Server-Sive)
 * Custom search column by column and complex search to optimize SQL queries
-* Analyze Servert-Side Request and Generate SQL queries
-    * Can handle complexe query (join)
+* Analyze Server-Side Request and Generate SQL queries
+    * Can handle complex query (join)
     * Can handle Optimize Query to search value (not only Like %, you can parameter to use =,<,>,<=,>=,BETWEEN...)
 * Using all this features in the same time permits to easily handle a dataTable with PHP
 
@@ -50,7 +50,7 @@ DataTable::instance('id')
     ->setDom($dom)                           // Alias for setJsInitParameter('dom', $dom)
     ->setColumn($params, $show = true)       // Add a column and there options to the table:
                                              // - Initialization Javascript Options (see the doc : DataTables.net > Refererences > Column)
-                                             //  - PHP Options (parent for complexe header, sFilter, sql_table, sqlFilter... see l.169)
+                                             //  - PHP Options (parent for complex header, sFilter, sql_table, sqlFilter... see l.169)
                                              // if($show) will be printed in the table else will only be load via ajax
     ->setColumns($columns)                   // Add columns
     ->setServerSide($ajax)                   // http://datatables.net/reference/option/ajax
